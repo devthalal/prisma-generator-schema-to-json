@@ -1,34 +1,1029 @@
 generator custom_generator {
   provider = "npx prisma-generator-schema-to-json"
-  output   = "../types"
+  output   = "../schemaJson"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("PG_URL")
 }
 
+enum PosterSource {
+  RAW
+  GITHUB
+}
+
+/// Person with access to the system and who owns objects in the database.
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  system_user_id                 String    @id @default(uuid()) /// @desc Unique identifier for the user. @dn User @p identifiedBy
+  organization_id                String /// @desc Unique identifier of the organization associated with the user. @dn Organization  
+  business_unit_id               String /// @desc Unique identifier of the business unit with which the user is associated. @dn Business Unit 
+  parent_system_user_id          String? /// @desc Unique identifier of the manager of the user. @dn Manager 
+  first_name                     String? /// @desc First name of the user. @dn First Name @p hasA
+  salutation                     String? /// @desc Salutation for correspondence with the user. @dn Salutation @p hasA
+  middle_name                    String? /// @desc Middle name of the user. @dn Middle Name @p hasA
+  last_name                      String? /// @desc Last name of the user. @dn Last Name @p hasA
+  personal_email_address         String? /// @desc Personal email address of the user. @dn Email 2 @p hasA
+  full_name                      String? /// @desc Full name of the user. @dn Full Name @p hasA
+  nick_name                      String? /// @desc Nickname of the user. @dn Nickname @p hasA
+  title                          String? /// @desc Title of the user. @dn Title @p hasA
+  internal_email_address         String? /// @desc Internal email address for the user. @dn Primary Email @p hasA
+  job_title                      String? /// @desc Job title of the user. @dn Job Title @p hasA
+  mobile_alert_email             String? /// @desc Mobile alert email address for the user. @dn Mobile Alert Email @p hasA
+  preferred_email_code           String? /// @desc Preferred email address for the user. @dn Preferred Email @p hasA
+  home_phone                     String? /// @desc Home phone number for the user. @dn Home Phone @p hasA
+  mobile_phone                   String? /// @desc Mobile phone number for the user. @dn Mobile Phone @p hasA
+  preferred_phone_code           String? /// @desc Preferred phone number for the user. @dn Preferred Phone @p hasA
+  preferred_address_code         String? /// @desc Preferred address for the user. @dn Preferred Address @p hasA
+  photo_url                      String? /// @desc URL for the Website on which a photo of the user is located. @dn Photo URL @p hasA
+  domain_name                    String /// @desc Active Directory domain of which the user is a member. @dn User Name @p hasA
+  passport_lo                    Int? /// @desc For internal use only. @dn Passport Lo @p hasA
+  created_on                     DateTime? /// @desc Date and time when the user was created. @dn Created On @p createdOn
+  passport_hi                    Int? /// @desc For internal use only. @dn Passport Hi @p hasA
+  disabled_reason                String? /// @desc Reason for disabling the user. @dn Disabled Reason @p hasA
+  modified_on                    DateTime? /// @desc Date and time when the user was last modified. @dn Modified On @p modifiedOn
+  created_by                     String? /// @desc Unique identifier of the user who created the user. @dn Created By 
+  employee_id                    String? /// @desc Employee identifier for the user. @dn Employee @p hasA
+  modified_by                    String? /// @desc Unique identifier of the user who last modified the user. @dn Modified By 
+  is_disabled                    Boolean? /// @desc Information about whether the user is enabled. @dn Status @p hasA
+  government_id                  String? /// @desc Government identifier for the user. @dn Government @p hasA
+  version_number                 Int? /// @desc Version number of the user. @dn Version number @p hasA
+  skills                         String? /// @desc Skill set of the user. @dn Skills @p hasA
+  display_in_service_views       Boolean? /// @desc Whether to display the user in service views. @dn Display in Service Views @p hasA
+  calendar_id                    String? /// @desc Fiscal calendar associated with the user. @dn Calendar @p hasA
+  setup_user                     Boolean /// @desc Check if user is a setup user. @dn Restricted Access Mode @p hasA
+  incoming_email_delivery_method String /// @desc Incoming email delivery method for the user. @dn Incoming Email Delivery Method @p hasA
+  outgoing_email_delivery_method String /// @desc Outgoing email delivery method for the user. @dn Outgoing Email Delivery Method @p hasA
+  import_sequence_number         Int? /// @desc Unique identifier of the data import or data migration that created this record. @dn Import Sequence Number @p hasA
+  access_mode                    String /// @desc Type of user. @dn Access Mode @p hasA
+  invite_status_code             String? /// @desc User invitation status. @dn Invitation Status @p hasA
+  overridden_created_on          DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  utc_conversion_time_zone_code  Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  time_zone_rule_version_number  Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  yomi_full_name                 String? /// @desc Pronunciation of the full name of the user, written in phonetic hiragana or katakana characters. @dn Yomi Full Name @p hasA
+  yomi_last_name                 String? /// @desc Pronunciation of the last name of the user, written in phonetic hiragana or katakana characters. @dn Yomi Last Name @p hasA
+  yomi_middle_name               String? /// @desc Pronunciation of the middle name of the user, written in phonetic hiragana or katakana characters. @dn Yomi Middle Name @p hasA
+  yomi_first_name                String? /// @desc Pronunciation of the first name of the user, written in phonetic hiragana or katakana characters. @dn Yomi First Name @p hasA
+  is_integration_user            Boolean /// @desc Check if user is an integration user. @dn Integration user mode @p hasA
+  default_filters_populated      Boolean /// @desc Indicates if default outlook filters have been populated. @dn Default Filters Populated @p hasA
+  created_on_behalf_by           String? /// @desc Unique identifier of the delegate user who created the systemuser. @dn Created By (Delegate) 
+  queue_id                       String? /// @desc Unique identifier of the default queue for the user. @dn Default Queue 
+  modified_on_behalf_by          String? /// @desc Unique identifier of the delegate user who last modified the systemuser. @dn Modified By (Delegate) 
+  email_router_access_approval   String /// @desc Shows the status of the primary email address. @dn Primary Email Status @p hasA
+  transaction_currency_id        String? /// @desc Unique identifier of the currency associated with the systemuser. @dn Currency 
+  exchange_rate                  Decimal? /// @desc Exchange rate for the currency associated with the systemuser with respect to the base currency. @dn Exchange Rate @p hasA
+  cal_type                       String /// @desc License type of user. @dn License Type @p hasA
+  is_licensed                    Boolean /// @desc Information about whether the user is licensed. @dn User Licensed @p hasA
+  is_sync_with_directory         Boolean /// @desc Information about whether the user is synced with the directory. @dn User Synced @p hasA
+  user_license_type              Int /// @desc Shows the type of user license. @dn User License Type @p hasA
+  entity_image_id                String? /// @desc For internal use only. @dn Entity Image Id @p hasA
+  process_id                     String? /// @desc Shows the ID of the process. @dn Process @p hasA
+  stage_id                       String? /// @desc Shows the ID of the stage. @dn Process Stage @p hasA
+  position_id                    String? /// @desc User's position in hierarchical security model. @dn Position 
+  traversed_path                 String? /// @desc For internal use only. @dn Traversed Path @p hasA
+  application_id                 String? /// @desc The identifier for the application. This is used to access data in another application. @dn Application ID @p hasA
+  application_id_uri             String? /// @desc The URI used as a unique logical identifier for the external app. This can be used to validate the application. @dn Application ID URI @p hasA
+  identity_id                    Int /// @desc For internal use only. @dn Unique user identity id @p hasA
+  territory_id                   String? /// @desc Unique identifier of the territory to which the user is assigned. @dn Territory 
+  site_id                        String? /// @desc Site at which the user is located. @dn Site 
+  primary_address_id             String? ///  @desc User primary address identifier. @dn Primary Address @p hasA
+
+  created_by_user_rel            User?  @relation("created_by_user_rel", fields: [created_by], references: [system_user_id])
+  created_by_user                User[] @relation("created_by_user_rel")
+  modified_by_user_rel           User?  @relation("modified_by_user_rel", fields: [modified_by], references: [system_user_id])
+  modified_by_user               User[] @relation("modified_by_user_rel")
+  created_on_behalf_by_user_rel  User?  @relation("created_on_behalf_by_user_rel", fields: [created_on_behalf_by], references: [system_user_id])
+  created_on_behalf_by_user      User[] @relation("created_on_behalf_by_user_rel")
+  modified_on_behalf_by_user_rel User?  @relation("modified_on_behalf_by_user_rel", fields: [modified_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user     User[] @relation("modified_on_behalf_by_user_rel")
+
+  parent_user User?  @relation("parent_user", fields: [parent_system_user_id], references: [system_user_id])
+  children    User[] @relation("parent_user")
+
+  queue                            Queue?  @relation("queue", fields: [queue_id], references: [queue_id])
+  created_by_user_queue            Queue[] @relation("created_by_user_queue")
+  modified_by_user_queue           Queue[] @relation("modified_by_user_queue")
+  created_on_behalf_by_user_queue  Queue[] @relation("created_on_behalf_by_user_queue")
+  modified_on_behalf_by_user_queue Queue[] @relation("modified_on_behalf_by_user_queue")
+
+  currency                            Currency?  @relation("currency", fields: [transaction_currency_id], references: [transaction_currency_id])
+  created_by_user_currency            Currency[] @relation("created_by_user_currency")
+  modified_by_user_currency           Currency[] @relation("modified_by_user_currency")
+  created_on_behalf_by_user_currency  Currency[] @relation("created_on_behalf_by_user_currency")
+  modified_on_behalf_by_user_currency Currency[] @relation("modified_on_behalf_by_user_currency")
+
+  territory                            Territory?  @relation("territory", fields: [territory_id], references: [territory_id])
+  created_by_user_territory            Territory[] @relation("created_by_user_territory")
+  modified_by_user_territory           Territory[] @relation("modified_by_user_territory")
+  created_on_behalf_by_user_territory  Territory[] @relation("created_on_behalf_by_user_territory")
+  modified_on_behalf_by_user_territory Territory[] @relation("modified_on_behalf_by_user_territory")
+
+  position                            Position?  @relation("position", fields: [position_id], references: [position_id])
+  created_by_user_position            Position[] @relation("created_by_user_position")
+  modified_by_user_position           Position[] @relation("modified_by_user_position")
+  created_on_behalf_by_user_position  Position[] @relation("created_on_behalf_by_user_position")
+  modified_on_behalf_by_user_position Position[] @relation("modified_on_behalf_by_user_position")
+
+  site                            Site?  @relation("site", fields: [site_id], references: [site_id])
+  created_by_user_site            Site[] @relation("created_by_user_site")
+  modified_by_user_site           Site[] @relation("modified_by_user_site")
+  created_on_behalf_by_user_site  Site[] @relation("created_on_behalf_by_user_site")
+  modified_on_behalf_by_user_site Site[] @relation("modified_on_behalf_by_user_site")
+
+  primary_address                    Address?  @relation("primary_address", fields: [primary_address_id], references: [address_id])
+  address                            Address[] @relation("address")
+  created_by_user_address            Address[] @relation("created_by_user_address")
+  modified_by_user_address           Address[] @relation("modified_by_user_address")
+  created_on_behalf_by_user_address  Address[] @relation("created_on_behalf_by_user_address")
+  modified_on_behalf_by_user_address Address[] @relation("modified_on_behalf_by_user_address")
+
+  organization                            Organization?  @relation("organization", fields: [organization_id], references: [organization_id])
+  created_by_user_organization            Organization[] @relation("created_by_user_organization")
+  modified_by_user_organization           Organization[] @relation("modified_by_user_organization")
+  created_on_behalf_by_user_organization  Organization[] @relation("created_on_behalf_by_user_organization")
+  modified_on_behalf_by_user_organization Organization[] @relation("modified_on_behalf_by_user_organization")
+
+  business_unit                            BusinessUnit?  @relation("business_unit", fields: [business_unit_id], references: [business_unit_id])
+  created_by_user_business_unit            BusinessUnit[] @relation("created_by_user_business_unit")
+  modified_by_user_business_unit           BusinessUnit[] @relation("modified_by_user_business_unit")
+  created_on_behalf_by_user_business_unit  BusinessUnit[] @relation("created_on_behalf_by_user_business_unit")
+  modified_on_behalf_by_user_business_unit BusinessUnit[] @relation("modified_on_behalf_by_user_business_unit")
+
+  contact                            Contact[] @relation("contact")
+  created_by_user_contact            Contact[] @relation("created_by_user_contact")
+  modified_by_user_contact           Contact[] @relation("modified_by_user_contact")
+  created_on_behalf_by_user_contact  Contact[] @relation("created_on_behalf_by_user_contact")
+  modified_on_behalf_by_user_contact Contact[] @relation("modified_on_behalf_by_user_contact")
 }
 
-enum NotificationType {
-  newPosts
-  newComments
-  newFollowers
-  reply
-  heartOnPost
-  heartOnComment
-  heartOnReply
+// Currency in which a financial transaction is carried out.
+model Currency {
+  status_code             String? /// @desc Reason for the status of the transaction currency. @dn Status Reason
+  modified_on             DateTime? /// @desc Date and time when the transaction currency was last modified. @dn Modified On @p modifiedOn
+  state_code              String /// @desc Status of the transaction currency. @dn Status @p representsStateWith
+  version_number          Int? /// @desc Version number of the transaction currency. @dn Version Number @p hasA
+  modified_by             String? /// @desc Unique identifier of the user who last modified the transaction currency. @dn Modified By 
+  import_sequence_number  Int? /// @desc Unique identifier of the data import or data migration that created this record. @dn Import Sequence Number @p hasA
+  overridden_created_on   DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  created_on              DateTime? /// @desc Date and time when the transaction currency was created. @dn Created On @p createdOn
+  transaction_currency_id String    @id @default(uuid()) /// @desc Unique identifier of the transaction currency. @dn Transaction Currency @p identifiedBy
+  exchange_rate           Decimal /// @desc Exchange rate between the transaction currency and the base currency. @dn Exchange Rate @p hasA
+  currency_symbol         String /// @desc Symbol for the transaction currency. @dn Currency Symbol @p hasA
+  currency_name           String /// @desc Name of the transaction currency. @dn Currency Name @p hasA
+  created_by              String? /// @desc Unique identifier of the user who created the transaction currency. @dn Created By 
+  iso_currency_code       String /// @desc ISO currency code for the transaction currency. @dn Currency Code @p hasA
+  organization_id         String /// @desc Unique identifier of the organization associated with the transaction currency. @dn Organization 
+  currency_precision      Int /// @desc Number of decimal places that can be used for currency. @dn Currency Precision @p hasA
+  created_on_behalf_by    String? /// @desc Unique identifier of the delegate user who created the transactioncurrency. @dn Created By (Delegate) 
+  modified_on_behalf_by   String? /// @desc Unique identifier of the delegate user who last modified the transactioncurrency. @dn Modified By (Delegate) 
+  entity_image_id         String? /// @desc For internal use only. @dn Entity Image Id @p hasA 
+
+  users                               User[] @relation("currency")
+  created_by_user_currency            User?  @relation("created_by_user_currency", fields: [created_by], references: [system_user_id])
+  modified_by_user_currency           User?  @relation("modified_by_user_currency", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_currency  User?  @relation("created_on_behalf_by_user_currency", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_currency User?  @relation("modified_on_behalf_by_user_currency", fields: [modified_on_behalf_by], references: [system_user_id])
+
+  organization                Organization?  @relation("organization_currency", fields: [organization_id], references: [organization_id])
+  position                    Position[]     @relation("position_currency")
+  address                     Address[]      @relation("address_currency")
+  business_unit               BusinessUnit[] @relation("business_unit_currency")
+  base_currency_organizations Organization[] @relation("base_currency_organization")
 }
 
-enum Language {
-  Typescript
-  Javascript
-  Rust
-  Go
-  Python
-  Cpp
+/// Territory represents sales regions.
+model Territory {
+  territory_id                  String    @id @default(uuid()) /// @desc Unique identifier of the territory. @dn Territory @p identifiedBy
+  created_on                    DateTime? /// @desc Date and time when the record was created. @dn Created On @p createdOn
+  created_by                    String? /// @desc Unique identifier of the user who created the territory. @dn Created By 
+  modified_on                   DateTime? /// @desc Date and time when the record was modified. @dn Modified On @p modifiedOn
+  modified_by                   String? /// @desc Unique identifier of the user who last modified the territory. @dn Modified By 
+  created_on_behalf_by          String? /// @desc Unique identifier of the delegate user who created the territory. @dn Created By (Delegate) 
+  modified_on_behalf_by         String? /// @desc Unique identifier of the delegate user who last modified the territory. @dn Modified By (Delegate) 
+  organization_id               String /// @desc Unique identifier for the organization @dn Organization Id 
+  version_number                Int? /// @desc Version Number @dn Version Number @p hasA
+  import_sequence_number        Int? /// @desc Sequence number of the import that created this record. @dn Import Sequence Number @p hasA
+  overridden_created_on         DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  time_zone_rule_version_number Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  utc_conversion_time_zone_code Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  name                          String /// @desc Name of the territory. @dn Territory Name @p hasA
+  description                   String? /// @desc Description of the territory. @dn Description @p hasA
+  manager_id                    String? /// @desc Unique identifier of the manager of the territory. @dn Manager 
+  entity_image_id               String? ///   @p hasA
+  exchange_rate                 Decimal? /// @desc Exchange rate for the currency associated with the territory with respect to the base currency. @dn Exchange Rate @p hasA
+  transaction_currency_id       String? /// @desc Unique identifier of the currency associated with the territory. @dn Currency  
+
+  users                                User[] @relation("territory")
+  created_by_user_territory            User?  @relation("created_by_user_territory", fields: [created_by], references: [system_user_id])
+  modified_by_user_territory           User?  @relation("modified_by_user_territory", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_territory  User?  @relation("created_on_behalf_by_user_territory", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_territory User?  @relation("modified_on_behalf_by_user_territory", fields: [modified_on_behalf_by], references: [system_user_id])
+
+  organization Organization? @relation("organization_territory", fields: [organization_id], references: [organization_id])
+}
+
+/// Queue - A list of records that require action, such as accounts, activities, and cases.
+model Queue {
+  queue_id                                String    @id @default(uuid()) /// @desc Unique identifier of the queue. @dn Queue @p identifiedBy
+  business_unit_id                        String? /// @desc Unique identifier of the business unit with which the queue is associated. @dn Business Unit 
+  organization_id                         String /// @desc Unique identifier of the organization associated with the queue. @dn Organization 
+  email_address                           String? /// @desc Email address that is associated with the queue. @dn Incoming Email @p hasA
+  primary_user_id                         String? /// @desc Unique identifier of the owner of the queue. @dn Owner (deprecated) 
+  queue_type_code                         String? /// @desc Type of queue that is automatically assigned when a user or queue is created. The type can be public, private, or work in process. @dn Queue Type @p hasA
+  name                                    String? /// @desc Name of the queue. @dn Name @p hasA
+  description                             String? /// @desc Description of the queue. @dn Description @p hasA
+  queue_semantics                         Int? /// @desc For internal use only. @dn Queue Semantics @p hasA
+  created_on                              DateTime? /// @desc Date and time when the queue was created. @dn Created On @p createdOn
+  created_by                              String? /// @desc Unique identifier of the user who created the queue record. @dn Created By 
+  modified_by                             String? /// @desc Unique identifier of the user who last modified the queue. @dn Modified By 
+  modified_on                             DateTime? /// @desc Date and time when the queue was last modified. @dn Modified On @p modifiedOn
+  version_number                          Int? /// @desc Version number of the queue. @dn Version Number @p hasA
+  ignore_unsolicited_email                Boolean? /// @desc Information that specifies whether a queue is to ignore unsolicited email (deprecated). @dn Convert To Email Activities @p hasA
+  is_fax_queue                            Boolean? /// @desc Indication of whether a queue is the fax delivery queue. @dn Fax Queue @p hasA
+  email_password                          String? /// @desc This attribute is no longer used. The data is now in the Mailbox.Password attribute. @dn Password (Obsolete) @p hasA
+  incoming_email_delivery_method          String /// @desc Incoming email delivery method for the queue. @dn Incoming Email Delivery Method @p hasA
+  email_username                          String? /// @desc This attribute is no longer used. The data is now in the Mailbox.UserName attribute. @dn User Name (Obsolete) @p hasA
+  outgoing_email_delivery_method          String /// @desc Outgoing email delivery method for the queue. @dn Outgoing Email Delivery Method @p hasA
+  allow_email_credentials                 Boolean /// @desc This attribute is no longer used. The data is now in the Mailbox.AllowEmailConnectorToUseCredentials attribute. @dn Allow to Use Credentials for Email Processing (Obsolete) @p hasA
+  incoming_email_filtering_method         String /// @desc Convert Incoming Email To Activities @dn Convert Incoming Email To Activities @p hasA
+  overridden_created_on                   DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  status_code                             String /// @desc Reason for the status of the queue. @dn Status Reason @p [object Object]
+  owning_business_unit                    String? /// @desc Unique identifier of the business unit that owns the queue. @dn Owning Business Unit 
+  owning_user                             String? /// @desc Unique identifier of the user who owns the queue. @dn Owning User @p hasA
+  state_code                              String /// @desc Status of the queue. @dn Status @p representsStateWith
+  created_on_behalf_by                    String? /// @desc Unique identifier of the delegate user who created the queue. @dn Created By (Delegate) 
+  modified_on_behalf_by                   String? /// @desc Unique identifier of the delegate user who last modified the queue. @dn Modified By (Delegate) 
+  number_of_items                         Int? /// @desc Number of Queue items associated with the queue. @dn Queue Items @p hasA
+  number_of_members                       Int? /// @desc Number of Members associated with the queue. @dn No. of Members @p hasA
+  import_sequence_number                  Int? /// @desc Unique identifier of the data import or data migration that created this record. @dn Import Sequence Number @p hasA
+  owning_team                             String? /// @desc Unique identifier of the team who owns the queue. @dn Owning Team @p hasA
+  transaction_currency_id                 String? /// @desc Unique identifier of the currency associated with the queue. @dn Currency 
+  exchange_rate                           Decimal? /// @desc Exchange rate for the currency associated with the queue with respect to the base currency. @dn Exchange Rate @p hasA
+  email_router_access_approval            String /// @desc Shows the status of the primary email address. @dn Primary Email Status @p hasA
+  default_mailbox                         String? /// @desc Select the mailbox associated with this queue. @dn Mailbox @p hasA
+  entity_image_id                         String? /// @desc For internal use only. @dn Entity Image Id @p hasA
+  is_email_address_approved_by_o365_admin Boolean /// @desc Shows the status of approval of the email address by O365 Admin. @dn Email Address O365 Admin Approval Status @p hasA
+  queue_view_type                         String /// @desc Select whether the queue is public or private. A public queue can be viewed by all. A private queue can be viewed only by the members added to the queue. @dn Type @p hasA 
+  owner_id                                String? // @desc owner's id @dn Owner
+  owner_id_type                           String? // @desc The type of owner, either User or Team.  @dn Owner Type
+
+  users                            User[] @relation("queue")
+  created_by_user_queue            User?  @relation("created_by_user_queue", fields: [created_by], references: [system_user_id])
+  modified_by_user_queue           User?  @relation("modified_by_user_queue", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_queue  User?  @relation("created_on_behalf_by_user_queue", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_queue User?  @relation("modified_on_behalf_by_user_queue", fields: [modified_on_behalf_by], references: [system_user_id])
+}
+
+// Position of a user in the hierarchy
+model Position {
+  position_id                   String    @id @default(uuid()) /// @desc Unique identifier for position entity instances @dn Position @p identifiedBy
+  created_on                    DateTime? /// @desc Date and time when the record was created. @dn Created On @p createdOn
+  created_by                    String? /// @desc Unique identifier of the user who created the record. @dn Created By 
+  modified_on                   DateTime? /// @desc Date and time when the record was modified. @dn Modified On @p modifiedOn
+  modified_by                   String? /// @desc Unique identifier of the user who modified the record. @dn Modified By 
+  created_on_behalf_by          String? /// @desc Unique identifier of the delegate user who created the record. @dn Created By (Delegate) 
+  modified_on_behalf_by         String? /// @desc Unique identifier of the delegate user who modified the record. @dn Modified By (Delegate) 
+  organization_id               String? /// @desc Unique identifier for the organization @dn Organization Id 
+  state_code                    String /// @desc Status of the Position @dn Status @p representsStateWith
+  status_code                   String? /// @desc Reason for the status of the Position @dn Status Reason
+  version_number                Int? ///   @p hasA
+  import_sequence_number        Int? /// @desc Sequence number of the import that created this record. @dn Import Sequence Number @p hasA
+  overridden_created_on         DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  time_zone_rule_version_number Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  utc_conversion_time_zone_code Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  name                          String? /// @desc The name of the position. @dn Name @p hasA
+  parent_position_id            String? /// @desc Parent position. @dn Parent Position 
+  exchange_rate                 Decimal? /// @desc Exchange rate for the currency associated with the position with respect to the base currency. @dn Exchange Rate @p hasA
+  description                   String? /// @desc The description of the position. @dn Description @p hasA
+  transaction_currency_id       String? /// @desc Unique identifier of the currency associated with the position. @dn Currency  
+
+  users                               User[] @relation("position")
+  created_by_user_position            User?  @relation("created_by_user_position", fields: [created_by], references: [system_user_id])
+  modified_by_user_position           User?  @relation("modified_by_user_position", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_position  User?  @relation("created_on_behalf_by_user_position", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_position User?  @relation("modified_on_behalf_by_user_position", fields: [modified_on_behalf_by], references: [system_user_id])
+
+  organization Organization? @relation("organization_position", fields: [organization_id], references: [organization_id])
+  currency     Currency?     @relation("position_currency", fields: [transaction_currency_id], references: [transaction_currency_id])
+
+  parent_position    Position?  @relation("parent_postion", fields: [parent_position_id], references: [position_id])
+  children_positions Position[] @relation("parent_postion")
+}
+
+/// Location or branch office where an organization does business. An organization can have multiple sites.
+model Site {
+  site_id                       String    @id @default(uuid()) /// @desc Unique identifier of the site. @dn Site @p identifiedBy
+  created_on                    DateTime? /// @desc Date and time when the site was created. @dn Created On @p createdOn
+  created_by                    String? /// @desc Unique identifier of the user who created the site. @dn Created By 
+  modified_on                   DateTime? /// @desc Date and time when the site was last modified. @dn Modified On @p modifiedOn
+  modified_by                   String? /// @desc Unique identifier of the user who last modified the site. @dn Modified By 
+  created_on_behalf_by          String? /// @desc Unique identifier of the delegate user who created the site. @dn Created By (Delegate) 
+  modified_on_behalf_by         String? /// @desc Unique identifier of the delegate user who last modified the site. @dn Modified By (Delegate) 
+  organization_id               String /// @desc Unique identifier for the organization @dn Organization Id 
+  version_number                Int? /// @desc Version Number @dn Version Number @p hasA
+  import_sequence_number        Int? /// @desc Sequence number of the import that created this record. @dn Import Sequence Number @p hasA
+  overridden_created_on         DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  time_zone_rule_version_number Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  utc_conversion_time_zone_code Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  name                          String /// @desc Name of the site. @dn Name @p hasA
+  email_address                 String? /// @desc Email address for the site. @dn Email @p hasA
+  time_zone_code                String /// @desc Local time zone for the site. @dn Time Zone @p hasA 
+
+  users                           User[] @relation("site")
+  created_by_user_site            User?  @relation("created_by_user_site", fields: [created_by], references: [system_user_id])
+  modified_by_user_site           User?  @relation("modified_by_user_site", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_site  User?  @relation("created_on_behalf_by_user_site", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_site User?  @relation("modified_on_behalf_by_user_site", fields: [modified_on_behalf_by], references: [system_user_id])
+
+  organization Organization? @relation("organization_site", fields: [organization_id], references: [organization_id])
+}
+
+/// Address and shipping information. Used to store additional addresses for an account or contact.
+model Address {
+  address_id                    String    @id @default(uuid()) /// @desc Unique identifier of the customer address. @dn Address @p identifiedBy
+  address_number                Int? /// @desc Shows the number of the address, to indicate whether the address is the primary, secondary, or other address for the customer. @dn Address Number @p hasA
+  object_type_code              String /// @desc Shows the type code of the customer record to indicate whether the address belongs to a customer account or contact. @dn Object Type  @p hasA
+  address_type_code             String? /// @desc Select the address type, such as primary or billing. @dn Address Type @p hasA
+  name                          String? /// @desc Type a descriptive name for the customer's address, such as Corporate Headquarters. @dn Address Name @p hasA
+  primary_contact_name          String? /// @desc Type the name of the primary contact person for the customer's address. @dn Address Contact @p hasA
+  line1                         String? /// @desc Type the first line of the customer's address to help identify the location. @dn Street 1 @p hasA
+  line2                         String? /// @desc Type the second line of the customer's address. @dn Street 2 @p hasA
+  line3                         String? /// @desc Type the third line of the customer's address. @dn Street 3 @p hasA
+  city                          String? /// @desc Type the city for the customer's address to help identify the location. @dn City @p hasA
+  state_or_province             String? /// @desc Type the state or province of the customer's address. @dn State/Province @p hasA
+  county                        String? /// @desc Type the county for the customer's address. @dn County @p hasA
+  country                       String? /// @desc Type the country or region for the customer's address. @dn Country/Region @p hasA
+  post_office_box               String? /// @desc Type the post office box number of the customer's address. @dn Post Office Box @p hasA
+  postal_code                   String? /// @desc Type the ZIP Code or postal code for the address. @dn ZIP/Postal Code @p hasA
+  utc_offset                    String? /// @desc Select the time zone for the address. @dn UTC Offset @p hasA
+  freight_terms_code            String? /// @desc Select the freight terms to make sure shipping charges are processed correctly. @dn Freight Terms @p hasA
+  ups_zone                      String? /// @desc Type the UPS zone of the customer's address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS. @dn UPS Zone @p hasA
+  latitude                      String? /// @desc Type the latitude value for the customer's address, for use in mapping and other applications. @dn Latitude @p hasA
+  telephone1                    String? /// @desc Type the primary phone number for the customer's address. @dn Main Phone @p hasA
+  longitude                     String? /// @desc Type the longitude value for the customer's address, for use in mapping and other applications. @dn Longitude @p hasA
+  shipping_method_code          String? /// @desc Select a shipping method for deliveries sent to this address. @dn Shipping Method @p hasA
+  telephone2                    String? /// @desc Type a second phone number for the customer's address. @dn Phone 2 @p hasA
+  telephone3                    String? /// @desc Type a third phone number for the customer's address. @dn Telephone 3 @p hasA
+  fax                           String? /// @desc Type the fax number associated with the customer's address. @dn Fax @p hasA
+  version_number                Int? /// @desc Version number of the customer address. @dn Version Number @p hasA
+  created_by                    String? /// @desc Shows who created the record. @dn Created By 
+  created_on                    DateTime? /// @desc Shows the date and time when the record was created. @dn Created On @p createdOn
+  modified_by                   String? /// @desc Shows who last updated the record. @dn Modified By 
+  modified_on                   DateTime? /// @desc Shows the date and time when the record was last updated. @dn Modified On @p modifiedOn
+  owning_business_unit          String? /// @desc Shows the business unit that the record owner belongs to. @dn Owning Business Unit @p hasA
+  owning_user                   String? /// @desc Unique identifier of the user who owns the customer address. @dn Owner @p hasA
+  time_zone_rule_version_number Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  overridden_created_on         DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  utc_conversion_time_zone_code Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  import_sequence_number        Int? /// @desc Unique identifier of the data import or data migration that created this record. @dn Import Sequence Number @p hasA
+  created_on_behalf_by          String? /// @desc Shows who created the record on behalf of another user. @dn Created By (Delegate) 
+  modified_on_behalf_by         String? /// @desc Shows who last updated the record on behalf of another user. @dn Modified By (Delegate) 
+  transaction_currency_id       String? /// @desc Choose the local currency for the record to make sure budgets are reported in the correct currency. @dn Currency 
+  exchange_rate                 Decimal? /// @desc Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency. @dn Exchange Rate @p hasA
+  composite                     String? /// @desc Shows the complete address. @dn Address @p hasA 
+  owner_id                      String? // @desc owner's id @dn Owner
+  owner_id_type                 String? // @desc The type of owner, either User or Team.  @dn Owner Type
+
+  currency Currency? @relation("address_currency", fields: [transaction_currency_id], references: [transaction_currency_id])
+
+  users                              User[] @relation("address")
+  primary_address_user               User[] @relation("primary_address")
+  created_by_user_address            User?  @relation("created_by_user_address", fields: [created_by], references: [system_user_id])
+  modified_by_user_address           User?  @relation("modified_by_user_address", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_address  User?  @relation("created_on_behalf_by_user_address", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_address User?  @relation("modified_on_behalf_by_user_address", fields: [modified_on_behalf_by], references: [system_user_id])
+}
+
+/// Top level of the business hierarchy. The organization can be a specific business, holding company, or corporation.
+model Organization {
+  organization_id                                          String    @id @default(uuid()) /// @desc Unique identifier of the organization. @dn Organization @p identifiedBy
+  name                                                     String /// @desc Name of the organization. The name is set when SDM is installed and should not be changed. @dn Organization Name @p hasA
+  user_group_id                                            String? /// @desc Unique identifier of the default group of users in the organization. @dn User Group @p hasA
+  privilege_user_group_id                                  String? /// @desc Unique identifier of the default privilege for users in the organization. @dn Privilege User Group @p hasA
+  recurrence_expansion_job_batch_size                      Int /// @desc Specifies the value for number of instances created in on demand job in one shot. @dn Recurrence Expansion On Demand Job Batch Size @p hasA
+  recurrence_expansion_job_batch_interval                  Int /// @desc Specifies the interval (in seconds) for pausing expansion job. @dn Recurrence Expansion Job Batch Interval @p hasA
+  fiscal_period_type                                       Int /// @desc Type of fiscal period used throughout SDM. @dn Fiscal Period Type @p hasA
+  fiscal_calendar_start                                    DateTime? /// @desc Start date for the fiscal period that is to be used throughout SDM. @dn Fiscal Calendar Start @p hasA
+  date_format_code                                         String /// @desc Information about how the date is displayed throughout SDM. @dn Date Format Code @p hasA
+  time_format_code                                         String /// @desc Information that specifies how the time is displayed throughout SDM. @dn Time Format Code @p hasA
+  full_name_convention_code                                String /// @desc Order in which names are to be displayed throughout SDM. @dn Full Name Display Order @p hasA
+  negative_format_code                                     String /// @desc Information that specifies how negative numbers are displayed throughout SDM. @dn Negative Format @p hasA
+  number_format                                            String? /// @desc Specification of how numbers are displayed throughout SDM. @dn Number Format @p hasA
+  is_disabled                                              Boolean? /// @desc Information that specifies whether the organization is disabled. @dn Is Organization Disabled @p hasA
+  disabled_reason                                          String? /// @desc Reason for disabling the organization. @dn Disabled Reason @p hasA
+  current_kb_number                                        Int? /// @desc First article number to use. Deprecated. Use SetAutoNumberSeed message. @dn Current Article Number @p hasA
+  current_case_number                                      Int? /// @desc First case number to use. Deprecated. Use SetAutoNumberSeed message. @dn Current Case Number @p hasA
+  current_contract_number                                  Int? /// @desc First contract number to use. Deprecated. Use SetAutoNumberSeed message. @dn Current Contract Number @p hasA
+  current_quote_number                                     Int? /// @desc First quote number to use. Deprecated. Use SetAutoNumberSeed message. @dn Current Quote Number @p hasA
+  current_order_number                                     Int? /// @desc First order number to use. Deprecated. Use SetAutoNumberSeed message. @dn Current Order Number @p hasA
+  current_invoice_number                                   Int? /// @desc First invoice number to use. Deprecated. Use SetAutoNumberSeed message. @dn Current Invoice Number @p hasA
+  unique_specifier_length                                  Int? /// @desc Number of characters appended to invoice, quote, and order numbers. @dn Unique String Length @p hasA
+  created_on                                               DateTime? /// @desc Date and time when the organization was created. @dn Created On @p createdOn
+  modified_on                                              DateTime? /// @desc Date and time when the organization was last modified. @dn Modified On @p modifiedOn
+  fiscal_year_format                                       String? /// @desc Information that specifies how the name of the fiscal year is displayed throughout SDM. @dn Fiscal Year Format @p hasA
+  fiscal_period_format                                     String? /// @desc Information that specifies how the name of the fiscal period is displayed throughout SDM. @dn Fiscal Period Format @p hasA
+  fiscal_year_period_connect                               String /// @desc Information that specifies how the names of the fiscal year and the fiscal period should be connected when displayed together. @dn Fiscal Year Period Connector @p hasA
+  language_code                                            String? /// @desc Preferred language for the organization. @dn Language @p hasA
+  sort_id                                                  Int? /// @desc For internal use only. @dn Sort @p hasA
+  date_format_string                                       String? /// @desc String showing how the date is displayed throughout SDM. @dn Date Format String @p hasA
+  pricing_decimal_precision                                Int /// @desc Number of decimal places that can be used for prices. @dn Pricing Decimal Precision @p hasA
+  show_week_number                                         Boolean? /// @desc Information that specifies whether to display the week number in calendar displays throughout SDM. @dn Show Week Number @p hasA
+  next_tracking_number                                     Int? /// @desc Next token to be placed on the subject line of an email message. @dn Next Tracking Number @p hasA
+  tag_max_aggressive_cycles                                String /// @desc Maximum number of aggressive polling cycles executed for email auto-tagging when a new email is received. @dn Auto-Tag Max Cycles @p hasA
+  system_user_id                                           String? /// @desc Unique identifier of the system user for the organization. @dn System User @p hasA
+  created_by                                               String? /// @desc Unique identifier of the user who created the organization. @dn Created By 
+  grant_access_to_network_service                          Boolean? /// @desc For internal use only. @dn Grant Access To Network Service @p hasA
+  allow_outlook_scheduled_syncs                            Boolean /// @desc Indicates whether scheduled synchronizations to Outlook are allowed. @dn Allow Scheduled Synchronization @p hasA
+  allow_marketing_email_execution                          Boolean /// @desc Indicates whether marketing emails execution is allowed. @dn Allow Marketing Email Execution @p hasA
+  sql_access_group_id                                      String? /// @desc For internal use only. @dn SQL Access Group @p hasA
+  currency_format_code                                     String /// @desc Information about how currency symbols are placed throughout Microsoft Dynamics CRM. @dn Currency Format Code @p hasA
+  fiscal_settings_updated                                  Boolean /// @desc Information that specifies whether the fiscal settings have been updated. @dn Is Fiscal Settings Updated @p hasA
+  reporting_group_id                                       String? /// @desc For internal use only. @dn Reporting Group @p hasA
+  token_expiry                                             String? /// @desc Duration used for token expiration. @dn Token Expiration Duration @p hasA
+  share_to_previous_owner_on_assign                        Boolean /// @desc Information that specifies whether to share to previous owner on assign. @dn Share To Previous Owner On Assign @p hasA
+  acknowledgement_template_id                              String? /// @desc Unique identifier of the template to be used for acknowledgement when a user unsubscribes. @dn Acknowledgement Template @p hasA
+  modified_by                                              String? /// @desc Unique identifier of the user who last modified the organization. @dn Modified By 
+  integration_user_id                                      String? /// @desc Unique identifier of the integration user for the organization. @dn Integration User @p hasA
+  tracking_token_id_base                                   Int? /// @desc Base number used to provide separate tracking token identifiers to users belonging to different deployments. @dn Tracking Token Base @p hasA
+  business_closure_calendar_id                             String? /// @desc Unique identifier of the business closure calendar of organization. @dn Business Closure Calendar @p hasA
+  allow_auto_unsubscribe_acknowledgement                   Boolean? /// @desc Indicates whether automatic unsubscribe acknowledgement email is allowed to send. @dn Allow Automatic Unsubscribe Acknowledgement @p hasA
+  allow_auto_unsubscribe                                   Boolean? /// @desc Indicates whether automatic unsubscribe is allowed. @dn Allow Automatic Unsubscribe @p hasA
+  picture                                                  String? /// @desc For internal use only. @dn Picture @p hasA
+  version_number                                           Int? /// @desc Version number of the organization. @dn Version Number @p hasA
+  tracking_prefix                                          String? /// @desc History list of tracking token prefixes. @dn Tracking Prefix @p hasA
+  min_outlook_sync_interval                                Int /// @desc Minimum allowed time between scheduled Outlook synchronizations. @dn Min Synchronization Frequency @p hasA
+  bulk_operation_prefix                                    String /// @desc Prefix used for bulk operation numbering. @dn Bulk Operation Prefix @p hasA
+  allow_auto_response_creation                             Boolean? /// @desc Indicates whether automatic response creation is allowed. @dn Allow Automatic Response Creation @p hasA
+  maximum_tracking_number                                  Int? /// @desc Maximum tracking number before recycling takes place. @dn Max Tracking Number @p hasA
+  campaign_prefix                                          String /// @desc Prefix used for campaign numbering. @dn Campaign Prefix @p hasA
+  sql_access_group_name                                    String? /// @desc For internal use only. @dn SQL Access Group Name @p hasA
+  current_campaign_number                                  Int? /// @desc Current campaign number. Deprecated. Use SetAutoNumberSeed message. @dn Current Campaign Number @p hasA
+  fiscal_year_display_code                                 String /// @desc Information that specifies whether the fiscal year should be displayed based on the start date or the end date of the fiscal year. @dn Fiscal Year Display @p hasA
+  site_map_xml                                             String? /// @desc XML string that defines the navigation structure for the application. @dn SiteMap XML @p hasA
+  is_registered                                            Boolean? /// @desc For internal use only. @dn Is Registered @p hasA
+  reporting_group_name                                     String? /// @desc For internal use only. @dn Reporting Group Name @p hasA
+  current_bulk_operation_number                            Int? /// @desc Current bulk operation number. Deprecated. Use SetAutoNumberSeed message. @dn Current Bulk Operation Number @p hasA
+  schema_name_prefix                                       String? /// @desc Prefix used for custom entities and attributes. @dn Customization Name Prefix @p hasA
+  tag_polling_period                                       Int /// @desc Normal polling frequency used for email receive auto-tagging in outlook. @dn Auto-Tag Interval @p hasA
+  tracking_token_id_digits                                 String? /// @desc Number of digits used to represent a tracking token identifier. @dn Tracking Token Digits @p hasA
+  u_t_c_conversion_time_zone_code                          Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  time_zone_rule_version_number                            Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  current_import_sequence_number                           Int /// @desc Import sequence to use. @dn Current Import Sequence Number @p hasA
+  parsed_table_prefix                                      String /// @desc Prefix used for parsed tables. @dn Parsed Table Prefix @p hasA
+  v3_callout_config_hash                                   String? /// @desc Hash of the V3 callout configuration file. @dn V3 Callout Hash @p hasA
+  is_fiscal_period_month_based                             Boolean /// @desc Indicates whether the fiscal period is displayed as the month number. @dn Is Fiscal Period Monthly @p hasA
+  locale_id                                                String /// @desc Unique identifier of the locale of the organization. @dn Locale @p hasA
+  parsed_table_column_prefix                               String /// @desc Prefix used for parsed table columns. @dn Parsed Table Column Prefix @p hasA
+  support_user_id                                          String? /// @desc Unique identifier of the support user for the organization. @dn Support User @p hasA
+  a_m_designator                                           String /// @desc AM designator to use throughout Microsoft Dynamics CRM. @dn AM Designator @p hasA
+  currency_display_option                                  String /// @desc Indicates whether to display money fields with currency code or currency symbol. @dn Display Currencies Using @p hasA
+  min_address_book_sync_interval                           Int /// @desc Normal polling frequency used for address book synchronization in Microsoft Office Outlook. @dn Min Address Synchronization Frequency @p hasA
+  is_duplicate_detection_enabled_for_online_create_update  Boolean /// @desc Indicates whether duplicate detection during online create or update is enabled. @dn Is Duplicate Detection Enabled for Online Create/Update @p hasA
+  feature_set                                              String? /// @desc Features to be enabled as an XML BLOB. @dn Feature Set @p hasA
+  blocked_attachments                                      String? /// @desc Prevent upload or download of certain attachment types that are considered dangerous. @dn Block Attachments @p hasA
+  is_duplicate_detection_enabled_for_offline_sync          Boolean /// @desc Indicates whether duplicate detection of records during offline synchronization is enabled. @dn Is Duplicate Detection Enabled For Offline Synchronization @p hasA
+  allow_offline_scheduled_syncs                            Boolean /// @desc Indicates whether background offline synchronization in Microsoft Office Outlook is allowed. @dn Allow Offline Scheduled Synchronization @p hasA
+  allow_unresolved_parties_on_email_send                   Boolean /// @desc Indicates whether users are allowed to send email to unresolved parties (parties must still have an email address). @dn Allow Unresolved Address Email Send @p hasA
+  current_parsed_table_number                              Int /// @desc First parsed table number to use. @dn Current Parsed Table Number @p hasA
+  min_offline_sync_interval                                Int /// @desc Normal polling frequency used for background offline synchronization in Microsoft Office Outlook. @dn Min Offline Synchronization Frequency @p hasA
+  allow_web_excel_export                                   Boolean /// @desc Indicates whether Web-based export of grids to Microsoft Office Excel is allowed. @dn Allow Export to Excel @p hasA
+  reference_site_map_xml                                   String? /// @desc XML string that defines the navigation structure for the application. This is the site map from the previously upgraded build and is used in a 3-way merge during upgrade. @dn Reference SiteMap XML @p hasA
+  is_duplicate_detection_enabled_for_import                Boolean /// @desc Indicates whether duplicate detection of records during import is enabled. @dn Is Duplicate Detection Enabled For Import @p hasA
+  calendar_type                                            Int? /// @desc Calendar type for the system. Set to Gregorian US by default. @dn Calendar Type @p hasA
+  sqm_enabled                                              Boolean? /// @desc Setting for SQM data collection, 0 no, 1 yes enabled @dn Is SQM Enabled @p hasA
+  allow_address_book_syncs                                 Boolean /// @desc Indicates whether background address book synchronization in Microsoft Office Outlook is allowed. @dn Allow Address Book Synchronization @p hasA
+  max_upload_file_size                                     Int /// @desc Maximum allowed size of an attachment. @dn Max Upload File Size @p hasA
+  enable_pricing_on_create                                 Boolean /// @desc Enable pricing calculations on a Create call. @dn Enable Pricing On Create @p hasA
+  is_sop_integration_enabled                               Boolean /// @desc Enable sales order processing integration. @dn Is Sales Order Integration Enabled @p hasA
+  currency_decimal_precision                               Int /// @desc Number of decimal places that can be used for currency. @dn Currency Decimal Precision @p hasA
+  max_appointment_duration_days                            Int /// @desc Maximum number of days an appointment can last. @dn Max Appointment Duration @p hasA
+  email_send_polling_period                                Int /// @desc Normal polling frequency used for sending email in Microsoft Office Outlook. @dn Email Send Polling Frequency @p hasA
+  render_secure_i_frame_for_email                          Boolean /// @desc Flag to render the body of email in the Web form in an IFRAME with the security='restricted' attribute set. This is additional security but can cause a credentials prompt. @dn Render Secure Frame For Email @p hasA
+  priv_reporting_group_id                                  String? /// @desc For internal use only. @dn Privilege Reporting Group @p hasA
+  base_currency_id                                         String? /// @desc Unique identifier of the base currency of the organization. @dn Currency 
+  max_records_for_export_to_excel                          Int /// @desc Maximum number of records that will be exported to a static Microsoft Office Excel worksheet when exporting from the grid. @dn Max Records For Excel Export @p hasA
+  priv_reporting_group_name                                String? /// @desc For internal use only. @dn Privilege Reporting Group Name @p hasA
+  is_presence_enabled                                      Boolean? /// @desc Information on whether IM presence is enabled. @dn Presence Enabled @p hasA
+  is_duplicate_detection_enabled                           Boolean /// @desc Indicates whether duplicate detection of records is enabled. @dn Is Duplicate Detection Enabled @p hasA
+  expire_subscriptions_in_days                             Int /// @desc Maximum number of days before deleting inactive subscriptions. @dn Days to Expire Subscriptions @p hasA
+  is_audit_enabled                                         Boolean /// @desc Enable or disable auditing of changes. @dn Is Auditing Enabled @p hasA
+  base_currency_precision                                  Int /// @desc Number of decimal places that can be used for the base currency. @dn Base Currency Precision @p hasA
+  base_currency_symbol                                     String /// @desc Symbol used for the base currency. @dn Base Currency Symbol @p hasA
+  max_records_for_lookup_filters                           Int /// @desc Maximum number of lookup and picklist records that can be selected by user for filtering. @dn Max Records Filter Selection @p hasA
+  allow_entity_only_audit                                  Boolean /// @desc Indicates whether auditing of changes to entity is allowed when no attributes have changed. @dn Allow Entity Level Auditing @p hasA
+  default_recurrence_end_range_type                        String? /// @desc Type of default recurrence end range date. @dn Default Recurrence End Range Type @p hasA
+  future_expansion_window                                  Int /// @desc Specifies the maximum number of months in future for which the recurring activities can be created. @dn Future Expansion Window @p hasA
+  past_expansion_window                                    Int /// @desc Specifies the maximum number of months in past for which the recurring activities can be created. @dn Past Expansion Window @p hasA
+  recurrence_expansion_synch_create_max                    Int /// @desc Specifies the maximum number of instances to be created synchronously after creating a recurring appointment. @dn Recurrence Expansion Synchronization Create Maximum @p hasA
+  recurrence_default_number_of_occurrences                 Int /// @desc Specifies the default value for number of occurrences field in the recurrence dialog. @dn Recurrence Default Number of Occurrences @p hasA
+  created_on_behalf_by                                     String? /// @desc Unique identifier of the delegate user who created the organization. @dn Created By (Delegate) 
+  modified_on_behalf_by                                    String? /// @desc Unique identifier of the delegate user who last modified the organization. @dn Modified By (Delegate) 
+  get_started_pane_content_enabled                         Boolean /// @desc Indicates whether Get Started content is enabled for this organization. @dn Is Get Started Pane Content Enabled @p hasA
+  use_read_form                                            Boolean /// @desc Indicates whether the read-optimized form should be enabled for this organization. @dn Use Read-Optimized Form @p hasA
+  initial_version                                          String? /// @desc Initial version of the organization. @dn Initial Version @p hasA
+  sample_data_import_id                                    String? /// @desc Unique identifier of the sample data import job. @dn Sample Data Import @p hasA
+  report_script_errors                                     String /// @desc Picklist for selecting the organization preference for reporting scripting errors. @dn Report Script Errors @p hasA
+  require_approval_for_user_email                          Boolean /// @desc Indicates whether Send As Other User privilege is enabled. @dn Is Approval For User Email Required @p hasA
+  require_approval_for_queue_email                         Boolean /// @desc Indicates whether Send As Other User privilege is enabled. @dn Is Approval For Queue Email Required @p hasA
+  goal_rollup_expiry_time                                  Int /// @desc Number of days after the goal's end date after which the rollup of the goal stops automatically. @dn Rollup Expiration Time for Goal @p hasA
+  goal_rollup_frequency                                    Int /// @desc Number of hours between automatic rollup jobs . @dn Automatic Rollup Frequency for Goal @p hasA
+  auto_apply_defaulton_case_create                         Boolean /// @desc Select whether to auto apply the default customer entitlement on case creation. @dn Auto Apply Default Entitlement on Case Create @p hasA
+  auto_apply_defaulton_case_update                         Boolean /// @desc Select whether to auto apply the default customer entitlement on case update. @dn Auto Apply Default Entitlement on Case Update @p hasA
+  fiscal_year_format_prefix                                String? /// @desc Prefix for the display of the fiscal year. @dn Prefix for Fiscal Year @p hasA
+  fiscal_year_format_suffix                                String? /// @desc Suffix for the display of the fiscal year. @dn Suffix for Fiscal Year @p hasA
+  fiscal_year_format_year                                  String? /// @desc Format for the year. @dn Fiscal Year Format Year @p hasA
+  discount_calculation_method                              String /// @desc Discount calculation method for the QOOI product. @dn Discount calculation method @p hasA
+  fiscal_period_format_period                              String? /// @desc Format in which the fiscal period will be displayed. @dn Format for Fiscal Period @p hasA
+  allow_client_message_bar_ad                              Boolean /// @desc Indicates whether Outlook Client message bar advertisement is allowed. @dn Allow Outlook Client Message Bar Advertisement @p hasA
+  allow_user_form_mode_preference                          Boolean /// @desc Indicates whether individuals can select their form mode preference in their personal options. @dn Allow User Form Mode Preference @p hasA
+  hash_filter_keywords                                     String? /// @desc Filter Subject Keywords @dn Hash Filter Keywords @p hasA
+  hash_max_count                                           Int? /// @desc Maximum number of subject keywords or recipients used for correlation @dn Hash Max Count @p hasA
+  hash_delta_subject_count                                 Int? /// @desc Maximum difference allowed between subject keywords count of the email messaged to be correlated @dn Hash Delta Subject Count @p hasA
+  hash_min_address_count                                   Int? /// @desc Minimum number of recipients required to match for email messaged to be correlated @dn Hash Min Address Count @p hasA
+  enable_smart_matching                                    Boolean? /// @desc Use Smart Matching. @dn Enable Smart Matching @p hasA
+  pinpoint_language_code                                   String? ///   @p hasA
+  org_db_org_settings                                      String? /// @desc Organization settings stored in Organization Database. @dn Organization Database Organization Settings @p hasA
+  is_user_access_audit_enabled                             Boolean /// @desc Enable or disable auditing of user access. @dn Is User Access Auditing Enabled @p hasA
+  user_access_auditing_interval                            Int /// @desc The interval at which user access is checked for auditing. @dn User Authentication Auditing Interval @p hasA
+  quick_find_record_limit_enabled                          Boolean /// @desc Indicates whether a quick find record limit should be enabled for this organization (allows for faster Quick Find queries but prevents overly broad searches). @dn Quick Find Record Limit Enabled @p hasA
+  enable_bing_maps_integration                             Boolean /// @desc Enable Integration with Bing Maps @dn Enable Integration with Bing Maps @p hasA
+  is_default_country_code_check_enabled                    Boolean /// @desc Enable or disable country code selection. @dn Enable or disable country code selection @p hasA
+  default_country_code                                     String? /// @desc Text area to enter default country code. @dn Default Country Code @p hasA
+  use_skype_protocol                                       Boolean /// @desc Indicates default protocol selected for organization. @dn User Skype Protocol @p hasA
+  incoming_email_exchange_email_retrieval_batch_size       Int? /// @desc Setting for the Async Service Mailbox Queue. Defines the retrieval batch size of exchange server. @dn Exchange Email Retrieval Batch Size @p hasA
+  email_correlation_enabled                                Boolean /// @desc Flag to turn email correlation on or off. @dn Use Email Correlation @p hasA
+  default_email_settings                                   String? /// @desc XML string containing the default email settings that are applied when a user or queue is created. @dn Default Email Settings @p hasA
+  email_connection_channel                                 String /// @desc Select if you want to use the Email Router or server-side synchronization for email processing. @dn Email Connection Channel @p hasA
+  default_email_server_profile_id                          String? /// @desc Unique identifier of the default email server profile. @dn Email Server Profile @p hasA
+  is_auto_save_enabled                                     Boolean /// @desc Information on whether auto save is enabled. @dn Auto Save Enabled @p hasA
+  bing_maps_api_key                                        String? /// @desc Api Key to be used in requests to Bing Maps services. @dn Bing Maps API Key @p hasA
+  generate_alerts_for_errors                               Boolean /// @desc Indicates whether alerts will be generated for errors. @dn Generate Alerts For Errors @p hasA
+  generate_alerts_for_information                          Boolean /// @desc Indicates whether alerts will be generated for information. @dn Generate Alerts For Information @p hasA
+  generate_alerts_for_warnings                             Boolean /// @desc Indicates whether alerts will be generated for warnings. @dn Generate Alerts For Warnings @p hasA
+  notify_mailbox_owner_of_email_server_level_alerts        Boolean /// @desc Indicates whether mailbox owners will be notified of email server profile level alerts. @dn Notify Mailbox Owner Of Email Server Level Alerts @p hasA
+  maximum_active_business_process_flows_allowed_per_entity Int? /// @desc Maximum number of active business process flows allowed per entity @dn Maximum active business process flows per entity @p hasA
+  entity_image_id                                          String? /// @desc For internal use only. @dn Entity Image Id @p hasA
+  allow_users_see_appdownload_message                      Boolean /// @desc Indicates whether the showing tablet application notification bars in a browser is allowed. @dn Allow the showing tablet application notification bars in a browser. @p hasA
+  signup_outlook_download_f_w_link                         String /// @desc CRM for Outlook Download URL @dn CRMForOutlookDownloadURL @p hasA
+  cascade_status_update                                    Boolean? /// @desc Flag to cascade Update on incident. @dn Cascade Status Update @p hasA
+  restrict_status_update                                   Boolean? /// @desc Flag to restrict Update on incident. @dn Restrict Status Update @p hasA
+  suppress_sla                                             Boolean /// @desc Indicates whether SLA is suppressed. @dn Is SLA suppressed @p hasA
+  social_insights_terms_accepted                           Boolean? /// @desc Flag for whether the organization has accepted the Social Insights terms of use. @dn Social Insights Terms of Use @p hasA
+  social_insights_instance                                 String? /// @desc Identifier for the Social Insights instance for the organization. @dn Social Insights instance identifier @p hasA
+  disable_social_care                                      Boolean /// @desc Indicates whether Social Care is disabled. @dn Is Social Care disabled @p hasA
+  max_products_in_bundle                                   Int /// @desc Restrict the maximum no of items in a bundle @dn Bundle Item Limit @p hasA
+  use_inbuilt_rule_for_default_pricelist_selection         Boolean? /// @desc Flag indicates whether to Use Inbuilt Rule For DefaultPricelist. @dn Use Inbuilt Rule For Default Pricelist Selection @p hasA
+  oob_price_calculation_enabled                            Boolean /// @desc Enable OOB pricing calculation logic for Opportunity, Quote, Order and Invoice entities. @dn Enable OOB Price calculation @p hasA
+  is_hierarchical_security_model_enabled                   Boolean /// @desc Enable Hierarchical Security Model @dn Enable Hierarchical Security Model @p hasA
+  maximum_dynamic_properties_allowed                       Int /// @desc Restrict the maximum number of product properties for a product family/bundle @dn Product Properties Item Limit @p hasA
+  use_position_hierarchy                                   Boolean /// @desc Use position hierarchy @dn Use position hierarchy @p hasA
+  max_depth_for_hierarchical_security_model                Int /// @desc Maximum depth for hierarchy security propagation. @dn Maximum depth for hierarchy security propagation. @p hasA
+  sla_pause_states                                         String? /// @desc Contains the on hold case status values. @dn SLA pause states @p hasA
+  social_insights_enabled                                  Boolean? /// @desc Flag for whether the organization is using Social Insights. @dn Social Insights Enabled @p hasA
+  is_appointment_attachment_sync_enabled                   Boolean /// @desc Enable or disable attachments sync for outlook and exchange. @dn Is Attachment Sync Enabled @p hasA
+  is_assigned_tasks_sync_enabled                           Boolean /// @desc Enable or disable assigned tasks sync for outlook and exchange. @dn Is Assigned Tasks Sync Enabled @p hasA
+  is_contact_mailing_address_sync_enabled                  Boolean /// @desc Enable or disable mailing address sync for outlook and exchange. @dn Is Mailing Address Sync Enabled @p hasA
+  max_supported_internet_explorer_version                  Int /// @desc The maximum version of IE to run browser emulation for in Outlook client @dn Max supported IE version @p hasA
+  global_help_url                                          String? /// @desc URL for the web page global help. @dn Global Help URL. @p hasA
+  global_help_url_enabled                                  Boolean /// @desc Indicates whether the customizable global help is enabled. @dn Is Customizable Global Help enabled @p hasA
+  global_append_url_parameters_enabled                     Boolean /// @desc Indicates whether the append URL parameters is enabled. @dn Is AppendUrl Parameters enabled @p hasA
+  km_settings                                              String? /// @desc XML string containing the Knowledge Management settings that are applied in Knowledge Management Wizard. @dn Knowledge Management Settings @p hasA
+  create_products_without_parent_in_active_state           Boolean /// @desc Enable Initial state of newly created products to be Active instead of Draft @dn Enable Active Initial Product State @p hasA
+  is_mailbox_inactive_backoff_enabled                      Boolean /// @desc Enable or disable mailbox keep alive for Server Side Sync. @dn Is Mailbox Keep Alive Enabled @p hasA
+  is_full_text_search_enabled                              Boolean /// @desc Indicates whether full-text search for Quick Find entities should be enabled for the organization. @dn Enable Full-text search for Quick Find @p hasA
+  enforce_read_only_plugins                                Boolean /// @desc Organization setting to enforce read only plugins. @dn Organization setting to enforce read only plugins. @p hasA
+  share_point_deployment_type                              String? /// @desc Indicates which SharePoint deployment type is configured for Server to Server. (Online or On-Premises) @dn Choose SharePoint Deployment Type @p hasA
+  organization_state                                       String? /// @desc Indicates the organization lifecycle state @dn Organization State @p hasA
+  default_theme_data                                       String? /// @desc Default theme data for the organization. @dn Default Theme Data @p hasA
+  is_folder_based_tracking_enabled                         Boolean /// @desc Enable or disable folder based tracking for Server Side Sync. @dn Is Folder Based Tracking Enabled @p hasA
+  web_resource_hash                                        String /// @desc Hash value of web resources. @dn Web resource hash @p hasA
+  expire_change_tracking_in_days                           Int /// @desc Maximum number of days to keep change tracking deleted records @dn Days to Expire Change Tracking Deleted Records @p hasA
+  max_folder_based_tracking_mappings                       Int /// @desc Maximum number of Folder Based Tracking mappings user can add @dn Max Folder Based Tracking Mappings @p hasA
+  privacy_statement_url                                    String? /// @desc Privacy Statement URL @dn Privacy Statement URL @p hasA
+  plugin_trace_log_setting                                 String /// @desc Plug-in Trace Log Setting for the Organization. @dn Plug-in Trace Log Setting @p hasA
+  is_mailbox_forced_unlocking_enabled                      Boolean /// @desc Enable or disable forced unlocking for Server Side Sync mailboxes. @dn Is Mailbox Forced Unlocking Enabled @p hasA
+  mailbox_intermittent_issue_min_range                     Int /// @desc Lower Threshold For Mailbox Intermittent Issue. @dn Lower Threshold For Mailbox Intermittent Issue @p hasA
+  mailbox_permanent_issue_min_range                        Int /// @desc Lower Threshold For Mailbox Permanent Issue. @dn Lower Threshold For Mailbox Permanent Issue. @p hasA
+  high_contrast_theme_data                                 String? /// @desc High contrast theme data for the organization. @dn High contrast Theme Data @p hasA
+  delegated_admin_user_id                                  String? /// @desc Unique identifier of the delegated admin user for the organization. @dn Delegated Admin @p hasA
+  is_external_search_index_enabled                         Boolean /// @desc Select whether data can be synchronized with an external search index. @dn Enable external search data syncing @p hasA
+  is_mobile_offline_enabled                                Boolean /// @desc Indicates whether the feature MobileOffline should be enabled for the organization. @dn Enable MobileOffline for this Organization @p hasA
+  is_office_graph_enabled                                  Boolean /// @desc Indicates whether the feature OfficeGraph should be enabled for the organization. @dn Enable OfficeGraph for this Organization @p hasA
+  is_one_drive_enabled                                     Boolean /// @desc Indicates whether the feature One Drive should be enabled for the organization. @dn Enable One Drive for this Organization @p hasA
+  external_party_entity_settings                           String? /// @desc XML string containing the ExternalPartyEnabled entities settings. @dn ExternalPartyEnabled Entities Settings.For internal use only @p hasA
+  external_party_correlation_keys                          String? /// @desc XML string containing the ExternalPartyEnabled entities correlation keys for association of existing External Party instance entities to newly created IsExternalPartyEnabled entities.For internal use only @dn ExternalPartyEnabled Entities correlation Keys @p hasA
+  max_verbose_logging_mailbox                              Int /// @desc Maximum number of mailboxes that can be toggled for verbose logging @dn Max No Of Mailboxes To Enable For Verbose Logging @p hasA
+  max_verbose_logging_sync_cycles                          Int /// @desc Maximum number of sync cycles for which verbose logging will be enabled by default @dn Maximum number of sync cycles for which verbose logging will be enabled by default @p hasA
+  mobile_offline_sync_interval                             Int /// @desc Sync interval for mobile offline. @dn Sync interval for mobile offline. @p hasA
+  office_graph_delve_url                                   String? /// @desc The url to open the Delve for the organization. @dn The url to open the Delve @p hasA
+  mobile_offline_min_license_trial                         Int /// @desc Minimum number of user license required for mobile offline service by trial organization @dn Minimum number of user license required for mobile offline service by trial organization @p hasA
+  mobile_offline_min_license_prod                          Int /// @desc Minimum number of user license required for mobile offline service by production/preview organization @dn Minimum number of user license required for mobile offline service by production/preview organization @p hasA
+  days_since_record_last_modified_max_value                Int /// @desc The maximum value for the Mobile Offline setting Days since record last modified @dn Max value of Days since record last modified @p hasA
+  task_based_flow_enabled                                  Boolean /// @desc Select whether to turn on task flows for the organization. @dn Enable Task Flow processes for this Organization @p hasA
+  show_k_b_article_deprecation_notification                Boolean /// @desc Select whether to display a KB article deprecation notification to the user. @dn Show KBArticle deprecation message to user @p hasA
+  azure_scheduler_job_collection_name                      String? /// @desc For internal use only. @dn For internal use only. @p hasA
+  cortana_proactive_experience_enabled                     Boolean /// @desc Indicates whether the feature CortanaProactiveExperience Flow processes should be enabled for the organization. @dn Enable Cortana Proactive Experience Flow processes for this Organization @p hasA
+  office_apps_auto_deployment_enabled                      Boolean /// @desc Indicates whether the Office Apps auto deployment is enabled for the organization. @dn Enable Office Apps Auto Deployment for this Organization @p hasA
+  app_designer_experience_enabled                          Boolean /// @desc Indicates whether the appDesignerExperience is enabled for the organization. @dn Enable App Designer Experience for this Organization @p hasA
+  enable_immersive_skype_integration                       Boolean /// @desc Enable Integration with Immersive Skype @dn Enable Integration with Immersive Skype @p hasA
+  auto_apply_sla                                           Boolean /// @desc Indicates whether to Auto-apply SLA on case record update after SLA was manually applied. @dn Is Auto-apply SLA After Manually Over-riding @p hasA
+  is_email_server_profile_content_filtering_enabled        Boolean /// @desc Enable Email Server Profile content filtering @dn Is Email Server Profile Content Filtering Enabled @p hasA
+  is_delegate_access_enabled                               Boolean /// @desc Enable Delegation Access content @dn Is Delegation Access Enabled @p hasA
+  display_navigation_tour                                  Boolean /// @desc Indicates whether or not navigation tour is displayed. @dn Display Navigation Tour @p hasA
+  use_legacy_rendering                                     Boolean /// @desc Select whether to use legacy form rendering. @dn Legacy Form Rendering @p hasA
+  default_mobile_offline_profile_id                        String? /// @desc Unique identifier of the default mobile offline profile. @dn Default Mobile Offline Profile @p hasA
+  current_ka_number                                        Int /// @desc Enter the first number to use for knowledge articles. Deprecated. Use SetAutoNumberSeed message. @dn Current Knowledge Article Number @p hasA
+  current_category_number                                  Int /// @desc Enter the first number to use for Categories. Deprecated. Use SetAutoNumberSeed message. @dn Current Category Number @p hasA
+  maximum_entities_with_active_s_l_a                       Int? /// @desc Maximum number of active SLA allowed per entity in online @dn Maximum number of active SLA allowed per entity in online @p hasA
+  maximum_s_l_a_k_p_i_per_entity_with_active_s_l_a         Int? /// @desc Maximum number of SLA KPI per active SLA allowed for entity in online @dn Maximum number of active SLA KPI allowed per entity in online @p hasA
+  is_conflict_detection_enabled_for_mobile_client          Boolean /// @desc Information that specifies whether conflict detection for mobile client is enabled. @dn Is Conflict Detection for Mobile Client enabled @p hasA
+  is_delve_action_hub_integration_enabled                  Boolean? /// @desc Indicates whether the feature Action Hub should be enabled for the organization. @dn Enable Action Hub for this Organization @p hasA
+  org_insights_enabled                                     Boolean /// @desc Select whether to turn on OrgInsights for the organization. @dn Enable OrgInsights for this Organization @p hasA
+  product_recommendations_enabled                          Boolean /// @desc Select whether to turn on product recommendations for the organization. @dn Enable Product Recommendations for this Organization @p hasA
+  text_analytics_enabled                                   Boolean /// @desc Select whether to turn on text analytics for the organization. @dn Enable Text Analytics for this Organization @p hasA
+  max_conditions_for_mobile_offline_filters                Int? /// @desc Maximum number of conditions allowed for mobile offline filters @dn Maximum number of conditions allowed for mobile offline filters @p hasA
+  is_folder_auto_createdon_s_p                             Boolean /// @desc Select whether folders should be automatically created on SharePoint. @dn Automatically create folders @p hasA
+  power_bi_feature_enabled                                 Boolean /// @desc Indicates whether the Power BI feature should be enabled for the organization. @dn Enable Power BI feature for this Organization @p hasA
+  is_action_card_enabled                                   Boolean /// @desc Indicates whether the feature Action Card should be enabled for the organization. @dn Enable Action Card for this Organization @p hasA
+  is_email_monitoring_allowed                              Boolean /// @desc Allow tracking recipient activity on sent emails. @dn Allow tracking recipient activity on sent emails @p hasA
+  is_activity_analysis_enabled                             Boolean? /// @desc Indicates whether the feature Relationship Analytics should be enabled for the organization. @dn Enable Relationship Analytics for this Organization @p hasA
+  is_auto_data_capture_enabled                             Boolean /// @desc Indicates whether the feature Auto Capture should be enabled for the organization. @dn Enable Auto Capture for this Organization @p hasA
+  external_base_url                                        String? /// @desc Specify the base URL to use to look for external document suggestions. @dn External Base URL @p hasA
+  is_preview_enabled_for_action_card                       Boolean /// @desc Indicates whether the Preview feature for Action Card should be enabled for the organization. @dn Enable Preview Action Card feature for this Organization @p hasA
+  is_preview_for_email_monitoring_allowed                  Boolean /// @desc Is Preview For Email Monitoring Allowed. @dn Allows Preview For Email Monitoring @p hasA
+  unresolve_email_address_if_multiple_match                Boolean /// @desc Indicates whether email address should be unresolved if multiple matches are found @dn Set To,cc,bcc fields as unresolved if multiple matches are found @p hasA
+  ri_error_status                                          Int? /// @desc Error status of Relationship Insights provisioning. @dn Error status of Relationship Insights provisioning. @p hasA
+  widget_properties                                        String? /// @desc For Internal use only. @dn For Internal use only. @p hasA
+  enable_microsoft_flow_integration                        Boolean /// @desc Enable Integration with Microsoft Flow @dn Enable Integration with Microsoft Flow @p hasA
+  is_enabled_for_all_roles                                 Boolean /// @desc Indicates whether appmodule is enabled for all roles @dn option set values for isenabledforallroles @p hasA
+  is_preview_for_auto_capture_enabled                      Boolean /// @desc Indicates whether the feature Auto Capture should be enabled for the organization at Preview Settings. @dn Enable Auto Capture for this Organization at Preview Settings @p hasA
+  default_crm_custom_name                                  String /// @desc Name of the default crm custom. @dn Name of the default app @p hasA
+  aci_web_endpoint_url                                     String? /// @desc ACI Web Endpoint URL. @dn ACI Tenant URL. @p hasA
+  enable_l_p_authoring                                     Boolean /// @desc Select to enable learning path auhtoring. @dn Enable Learning Path Authoring @p hasA
+  is_resource_booking_exchange_sync_enabled                Boolean /// @desc Indicates if the synchronization of user resource booking with Exchange is enabled at organization level. @dn Resource booking synchronization enabled @p hasA
+  is_mobile_client_on_demand_sync_enabled                  Boolean /// @desc Information that specifies whether mobile client on demand sync is enabled. @dn Is Mobile Client On Demand Sync enabled @p hasA
+  post_message_whitelist_domains                           String? /// @desc For internal use only. @dn For internal use only. @p hasA
+  is_relationship_insights_enabled                         Boolean? /// @desc Indicates whether the feature Relationship Insights should be enabled for the organization. @dn Enable Relationship Insights for this Organization @p hasA
+  resolve_similar_unresolved_email_address                 Boolean /// @desc Apply same email address to all unresolved matches when you manually resolve it for one @dn Apply same email address to all unresolved matches when you manually resolve it for one @p hasA
+  is_text_wrap_enabled                                     Boolean /// @desc Information on whether text wrap is enabled. @dn Enable Text Wrap @p hasA
+  session_timeout_enabled                                  Boolean /// @desc Information that specifies whether session timeout is enabled @dn Session timeout enabled @p hasA
+  session_timeout_in_mins                                  Int? /// @desc Session timeout in minutes @dn Session timeout in minutes @p hasA
+  session_timeout_reminder_in_mins                         Int? /// @desc Session timeout reminder in minutes @dn Session timeout reminder in minutes @p hasA
+  microsoft_flow_environment                               String? /// @desc Environment selected for Integration with Microsoft Flow @dn Environment selected for Integration with Microsoft Flow @p hasA
+  inactivity_timeout_enabled                               Boolean /// @desc Information that specifies whether Inactivity timeout is enabled @dn Inactivity timeout enabled @p hasA
+  inactivity_timeout_in_mins                               Int? /// @desc Inactivity timeout in minutes @dn Inactivity timeout in minutes @p hasA
+  inactivity_timeout_reminder_in_mins                      Int? /// @desc Inactivity timeout reminder in minutes @dn Inactivity timeout reminder in minutes @p hasA
+  sync_opt_in_selection                                    Boolean /// @desc Indicates the selection to use the dynamics 365 azure sync framework or server side sync. @dn Enable dynamics 365 azure sync framework for this organization. @p hasA
+  sync_opt_in_selection_status                             String? /// @desc Indicates the status of the opt-in or opt-out operation for dynamics 365 azure sync. @dn Status of opt-in or opt-out operation for dynamics 365 azure sync. @p hasA
+  is_action_support_feature_enabled                        Boolean /// @desc Information that specifies whether Action Support Feature is enabled @dn Action Support Feature enabled @p hasA
+  is_b_p_f_entity_customization_feature_enabled            Boolean /// @desc Information that specifies whether BPF Entity Customization Feature is enabled @dn BPF Entity Customization Feature enabled @p hasA
+  bound_dashboard_default_card_expanded                    Boolean /// @desc Display cards in expanded state for interactive dashboard @dn Display cards in expanded state for Interactive Dashboard @p hasA
+  max_action_steps_in_b_p_f                                Int /// @desc Maximum number of actionsteps allowed in a BPF @dn Maximum number of actionsteps allowed in a BPF @p hasA
+  serve_static_resources_from_azure_c_d_n                  Boolean /// @desc Serve Static Content From CDN @dn Serve Static Content From CDN @p hasA
+  is_external_file_storage_enabled                         Boolean /// @desc Indicates whether the organization's files are being stored in Azure. @dn Enable external file storage @p hasA
+  client_feature_set                                       String? /// @desc Client Features to be enabled as an XML BLOB. @dn Client Feature Set @p hasA
+  is_read_audit_enabled                                    Boolean /// @desc Enable or disable auditing of read operations. @dn Is Read Auditing Enabled @p hasA
+  is_notes_analysis_enabled                                Boolean? /// @desc Indicates whether the feature Notes Analysis should be enabled for the organization. @dn Enable Notes Analysis for this Organization @p hasA
+  allow_legacy_dialogs_embedding                           Boolean /// @desc Enable embedding of certain legacy dialogs in Unified Interface browser client @dn Enable embedding of certain legacy dialogs in Unified Interface browser client @p hasA
+  appointment_rich_editor_experience                       Boolean /// @desc Information on whether rich editing experience for Appointment is enabled. @dn Enable Rich Editing Experience for Appointment @p hasA
+  scheduling_engine                                        String? /// @desc Scheduling engine for Appointments and Service Activities @dn Scheduling engine for Appointments and Service Activities @p hasA 
+
+  users                                   User[] @relation("organization")
+  created_by_user_organization            User?  @relation("created_by_user_organization", fields: [created_by], references: [system_user_id])
+  modified_by_user_organization           User?  @relation("modified_by_user_organization", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_organization  User?  @relation("created_on_behalf_by_user_organization", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_organization User?  @relation("modified_on_behalf_by_user_organization", fields: [modified_on_behalf_by], references: [system_user_id])
+
+  base_currency Currency?      @relation("base_currency_organization", fields: [base_currency_id], references: [transaction_currency_id])
+  territory     Territory[]    @relation("organization_territory")
+  currency      Currency[]     @relation("organization_currency")
+  position      Position[]     @relation("organization_position")
+  site          Site[]         @relation("organization_site")
+  business_unit BusinessUnit[] @relation("organization_business_unit")
+}
+
+/// Business, division, or department.
+model BusinessUnit {
+  business_unit_id        String    @id @default(uuid()) /// @desc Unique identifier of the business unit. @dn Business Unit @p identifiedBy
+  organization_id         String /// @desc Unique identifier of the organization associated with the business unit. @dn Organization 
+  name                    String /// @desc Name of the business unit. @dn Name @p hasA
+  description             String? /// @desc Description of the business unit. @dn Description @p hasA
+  division_name           String? /// @desc Name of the division to which the business unit belongs. @dn Division @p hasA
+  file_as_name            String? /// @desc Alternative name under which the business unit can be filed. @dn File as Name @p hasA
+  ticker_symbol           String? /// @desc Stock exchange ticker symbol for the business unit. @dn Ticker Symbol @p hasA
+  stock_exchange          String? /// @desc Stock exchange on which the business is listed. @dn Stock Exchange @p hasA
+  utc_offset              String? /// @desc UTC offset for the business unit. This is the difference between local time and standard Coordinated Universal Time. @dn UTC Offset @p hasA
+  created_on              DateTime? /// @desc Date and time when the business unit was created. @dn Created On @p createdOn
+  modified_on             DateTime? /// @desc Date and time when the business unit was last modified. @dn Modified On @p modifiedOn
+  credit_limit            String? /// @desc Credit limit for the business unit. @dn Credit Limit @p hasA
+  cost_center             String? /// @desc Name of the business unit cost center. @dn Cost Center @p hasA
+  web_site_url            String? /// @desc Website URL for the business unit. @dn Website @p hasA
+  ftp_site_url            String? /// @desc FTP site URL for the business unit. @dn FTP Site @p hasA
+  email_address           String? /// @desc Email address for the business unit. @dn Email @p hasA
+  inheritance_mask        Int? /// @desc Inheritance mask for the business unit. @dn Inheritance Mask @p hasA
+  created_by              String? /// @desc Unique identifier of the user who created the business unit. @dn Created By  
+  modified_by             String? /// @desc Unique identifier of the user who last modified the business unit. @dn Modified By  
+  workflow_suspended      Boolean? /// @desc Information about whether workflow or sales process rules have been suspended. @dn Workflow Suspended @p hasA
+  parent_business_unit_id String? /// @desc Unique identifier for the parent business unit. @dn Parent Business 
+  is_disabled             Boolean? /// @desc Information about whether the business unit is enabled or disabled. @dn Is Disabled @p hasA
+  disabled_reason         String? /// @desc Reason for disabling the business unit. @dn Disable Reason @p hasA
+  version_number          Int? /// @desc Version number of the business unit. @dn Version number @p hasA
+  picture                 String? /// @desc Picture or diagram of the business unit. @dn Picture @p hasA
+  calendar_id             String? /// @desc Fiscal calendar associated with the business unit. @dn Calendar @p hasA
+  overridden_created_on   DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  import_sequence_number  Int? /// @desc Unique identifier of the data import or data migration that created this record. @dn Import Sequence Number @p hasA
+  created_on_behalf_by    String? /// @desc Unique identifier of the delegate user who created the businessunit. @dn Created By (Delegate) 
+  modified_on_behalf_by   String? /// @desc Unique identifier of the delegate user who last modified the businessunit. @dn Modified By (Delegate) 
+  transaction_currency_id String? /// @desc Unique identifier of the currency associated with the businessunit. @dn Currency 
+  exchange_rate           Decimal? /// @desc Exchange rate for the currency associated with the businessunit with respect to the base currency. @dn Exchange Rate @p hasA 
+
+  users                                    User[] @relation("business_unit")
+  created_by_user_business_unit            User?  @relation("created_by_user_business_unit", fields: [created_by], references: [system_user_id])
+  modified_by_user_business_unit           User?  @relation("modified_by_user_business_unit", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_business_unit  User?  @relation("created_on_behalf_by_user_business_unit", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_business_unit User?  @relation("modified_on_behalf_by_user_business_unit", fields: [modified_on_behalf_by], references: [system_user_id])
+
+  organization            Organization?  @relation("organization_business_unit", fields: [organization_id], references: [organization_id])
+  parent_business_unit    BusinessUnit?  @relation("parent_business_unit", fields: [parent_business_unit_id], references: [business_unit_id])
+  children_business_units BusinessUnit[] @relation("parent_business_unit")
+
+  currency Currency? @relation("business_unit_currency", fields: [transaction_currency_id], references: [transaction_currency_id])
+}
+
+/// Person with whom a business unit has a relationship, such as customer, supplier, and colleague.
+model Contact {
+  contact_id                             String    @id @default(uuid()) /// @desc Unique identifier of the contact. @dn Contact @p identifiedBy
+  customer_size_code                     String? /// @desc Select the size of the contact's company for segmentation and reporting purposes. @dn Customer Size @p hasA
+  customer_type_code                     String? /// @desc Select the category that best describes the relationship between the contact and your organization. @dn Relationship Type @p hasA
+  preferred_contact_method_code          String? /// @desc Select the preferred method of contact. @dn Preferred Method of Contact @p hasA
+  lead_source_code                       String? /// @desc Select the primary marketing source that directed the contact to your organization. @dn Lead Source @p hasA
+  payment_terms_code                     String? /// @desc Select the payment terms to indicate when the customer needs to pay the total amount. @dn Payment Terms @p hasA
+  shipping_method_code                   String? /// @desc Select a shipping method for deliveries sent to this address. @dn Shipping Method @p hasA
+  account_id                             String? /// @desc Unique identifier of the account with which the contact is associated. @dn Account @p hasA
+  participates_in_workflow               Boolean? /// @desc Shows whether the contact participates in workflow rules. @dn Participates in Workflow @p hasA
+  is_backoffice_customer                 Boolean? /// @desc Select whether the contact exists in a separate accounting or other system, such as Microsoft Dynamics GP or another ERP database, for use in integration processes. @dn Back Office Customer @p hasA
+  salutation                             String? /// @desc Type the salutation of the contact to make sure the contact is addressed correctly in sales calls, email messages, and marketing campaigns. @dn Salutation @p hasA
+  job_title                              String? /// @desc Type the job title of the contact to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns. @dn Job Title @p hasA
+  first_name                             String? /// @desc Type the contact's first name to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns. @dn First Name @p hasA
+  department                             String? /// @desc Type the department or business unit where the contact works in the parent company or business. @dn Department @p hasA
+  nick_name                              String? /// @desc Type the contact's nickname. @dn Nickname @p hasA
+  middle_name                            String? /// @desc Type the contact's middle name or initial to make sure the contact is addressed correctly. @dn Middle Name @p hasA
+  last_name                              String? /// @desc Type the contact's last name to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns. @dn Last Name @p hasA
+  suffix                                 String? /// @desc Type the suffix used in the contact's name, such as Jr. or Sr. to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns. @dn Suffix @p hasA
+  yomi_first_name                        String? /// @desc Type the phonetic spelling of the contact's first name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact. @dn Yomi First Name @p hasA
+  full_name                              String? /// @desc Combines and shows the contact's first and last names so that the full name can be displayed in views and reports. @dn Full Name @p hasA
+  yomi_middle_name                       String? /// @desc Type the phonetic spelling of the contact's middle name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact. @dn Yomi Middle Name @p hasA
+  yomi_last_name                         String? /// @desc Type the phonetic spelling of the contact's last name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact. @dn Yomi Last Name @p hasA
+  anniversary                            DateTime? /// @desc Enter the date of the contact's wedding or service anniversary for use in customer gift programs or other communications. @dn Anniversary @p hasA
+  birth_date                             DateTime? /// @desc Enter the contact's birthday for use in customer gift programs or other communications. @dn Birthday @p hasA
+  government_id                          String? /// @desc Type the passport number or other government ID for the contact for use in documents or reports. @dn Government @p hasA
+  yomi_full_name                         String? /// @desc Shows the combined Yomi first and last names of the contact so that the full phonetic name can be displayed in views and reports. @dn Yomi Full Name @p hasA
+  description                            String? /// @desc Type additional information to describe the contact, such as an excerpt from the company's website. @dn Description @p hasA
+  employee_id                            String? /// @desc Type the employee ID or number for the contact for reference in orders, service cases, or other communications with the contact's organization. @dn Employee @p hasA
+  gender_code                            String? /// @desc Select the contact's gender to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns. @dn Gender @p hasA
+  annual_income                          String? /// @desc Type the contact's annual income for use in profiling and financial analysis. @dn Annual Income @p hasA
+  has_children_code                      String? /// @desc Select whether the contact has any children for reference in follow-up phone calls and other communications. @dn Has Children @p hasA
+  education_code                         String? /// @desc Select the contact's highest level of education for use in segmentation and analysis. @dn Education @p hasA
+  web_site_url                           String? /// @desc Type the contact's professional or personal website or blog URL. @dn Website @p hasA
+  family_status_code                     String? /// @desc Select the marital status of the contact for reference in follow-up phone calls and other communications. @dn Marital Status @p hasA
+  ftp_site_url                           String? /// @desc Type the URL for the contact's FTP site to enable users to access data and share documents. @dn FTP Site @p hasA
+  email_address1                         String? /// @desc Type the primary email address for the contact. @dn Email @p hasA
+  spouses_name                           String? /// @desc Type the name of the contact's spouse or partner for reference during calls, events, or other communications with the contact. @dn Spouse/Partner Name @p hasA
+  assistant_name                         String? /// @desc Type the name of the contact's assistant. @dn Assistant @p hasA
+  email_address2                         String? /// @desc Type the secondary email address for the contact. @dn Email Address 2 @p hasA
+  assistant_phone                        String? /// @desc Type the phone number for the contact's assistant. @dn Assistant Phone @p hasA
+  email_address3                         String? /// @desc Type an alternate email address for the contact. @dn Email Address 3 @p hasA
+  do_not_phone                           Boolean? /// @desc Select whether the contact accepts phone calls. If Do Not Allow is selected, the contact will be excluded from any phone call activities distributed in marketing campaigns. @dn Do not allow Phone Calls @p hasA
+  manager_name                           String? /// @desc Type the name of the contact's manager for use in escalating issues or other follow-up communications with the contact. @dn Manager @p hasA
+  manager_phone                          String? /// @desc Type the phone number for the contact's manager. @dn Manager Phone @p hasA
+  do_not_fax                             Boolean? /// @desc Select whether the contact allows faxes. If Do Not Allow is selected, the contact will be excluded from any fax activities distributed in marketing campaigns. @dn Do not allow Faxes @p hasA
+  do_not_postal_mail                     Boolean? /// @desc Select whether the contact allows direct mail. If Do Not Allow is selected, the contact will be excluded from letter activities distributed in marketing campaigns. @dn Do not allow Mails @p hasA
+  do_not_bulk_email                      Boolean? /// @desc Select whether the contact accepts bulk email sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the contact can be added to marketing lists, but will be excluded from the email. @dn Do not allow Bulk Emails @p hasA
+  do_not_bulk_postal_mail                Boolean? /// @desc Select whether the contact accepts bulk postal mail sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the contact can be added to marketing lists, but will be excluded from the letters. @dn Do not allow Bulk Mails @p hasA
+  account_role_code                      String? /// @desc Select the contact's role within the company or sales process, such as decision maker, employee, or influencer. @dn Role @p hasA
+  territory_code                         String? /// @desc Select a region or territory for the contact for use in segmentation and analysis. @dn Territory @p hasA
+  credit_limit                           String? /// @desc Type the credit limit of the contact for reference when you address invoice and accounting issues with the customer. @dn Credit Limit @p hasA
+  credit_on_hold                         Boolean? /// @desc Select whether the contact is on a credit hold, for reference when addressing invoice and accounting issues. @dn Credit Hold @p hasA
+  number_of_children                     Int? /// @desc Type the number of children the contact has for reference in follow-up phone calls and other communications. @dn No. of Children @p hasA
+  childrens_names                        String? /// @desc Type the names of the contact's children for reference in communications and client programs. @dn Children's Names @p hasA
+  mobile_phone                           String? /// @desc Type the mobile phone number for the contact. @dn Mobile Phone @p hasA
+  pager                                  String? /// @desc Type the pager number for the contact. @dn Pager @p hasA
+  telephone1                             String? /// @desc Type the main phone number for this contact. @dn Business Phone @p hasA
+  telephone2                             String? /// @desc Type a second phone number for this contact. @dn Home Phone @p hasA
+  telephone3                             String? /// @desc Type a third phone number for this contact. @dn Telephone 3 @p hasA
+  fax                                    String? /// @desc Type the fax number for the contact. @dn Fax @p hasA
+  aging30                                String? /// @desc For system use only. @dn Aging 30 @p hasA
+  state_code                             String /// @desc Shows whether the contact is active or inactive. Inactive contacts are read-only and can't be edited unless they are reactivated. @dn Status @p representsStateWith
+  aging60                                String? /// @desc For system use only. @dn Aging 60 @p hasA
+  status_code                            String? /// @desc Select the contact's status. @dn Status Reason @p [object Object]
+  aging90                                String? /// @desc For system use only. @dn Aging 90 @p hasA
+  parent_contact_id                      String? /// @desc Unique identifier of the parent contact. @dn Parent Contact @p hasA
+  address                                String? /// @desc Unique identifier for address n. @dn Address: ID 
+  preferred_system_user_id               String? /// @desc Choose the regular or preferred customer service representative for reference when scheduling service activities for the contact. @dn Preferred User 
+  master_id                              String? /// @desc Unique identifier of the master contact for merge. @dn Master ID 
+  preferred_appointment_day_code         String? /// @desc Select the preferred day of the week for service appointments. @dn Preferred Day @p hasA
+  preferred_appointment_time_code        String? /// @desc Select the preferred time of day for service appointments. @dn Preferred Time @p hasA
+  do_not_send_m_m                        Boolean? /// @desc Select whether the contact accepts marketing materials, such as brochures or catalogs. Contacts that opt out can be excluded from marketing initiatives. @dn Send Marketing Materials @p hasA
+  parent_customer_id                     String? /// @desc Select the parent account or parent contact for the contact to provide a quick link to additional details, such as financial information, activities, and opportunities. @dn Company Name @p referencesCustomer
+  merged                                 Boolean? /// @desc Shows whether the account has been merged with a master contact. @dn Merged @p hasA
+  external_user_identifier               String? /// @desc Identifier for an external user. @dn External User Identifier @p hasA
+  last_used_in_campaign                  DateTime? /// @desc Shows the date when the contact was last included in a marketing campaign or quick campaign. @dn Last Date Included in Campaign @p hasA
+  transaction_currency_id                String? /// @desc Choose the local currency for the record to make sure budgets are reported in the correct currency. @dn Currency 
+  exchange_rate                          Decimal? /// @desc Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency. @dn Exchange Rate @p hasA
+  annual_income_base                     String? /// @desc Shows the Annual Income field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area. @dn Annual Income (Base) @p hasA
+  credit_limit_base                      String? /// @desc Shows the Credit Limit field converted to the system's default base currency for reporting purposes. The calculations use the exchange rate specified in the Currencies area. @dn Credit Limit (Base) @p hasA
+  aging60_base                           String? /// @desc Shows the Aging 60 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area. @dn Aging 60 (Base) @p hasA
+  aging90_base                           String? /// @desc Shows the Aging 90 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area. @dn Aging 90 (Base) @p hasA
+  aging30_base                           String? /// @desc Shows the Aging 30 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area. @dn Aging 30 (Base) @p hasA
+  stage_id                               String? /// @desc Shows the ID of the stage. @dn Process Stage @p hasA
+  process_id                             String? /// @desc Shows the ID of the process. @dn Process @p hasA
+  entity_image_id                        String? /// @desc For internal use only. @dn Entity Image Id @p hasA
+  traversed_path                         String? /// @desc For internal use only. @dn Traversed Path @p hasA
+  sla_id                                 String? /// @desc Choose the service level agreement (SLA) that you want to apply to the Contact record. @dn SLA 
+  sla_invoked_id                         String? /// @desc Last SLA that was applied to this case. This field is for internal use only. @dn Last SLA applied 
+  on_hold_time                           Int? /// @desc Shows how long, in minutes, that the record was on hold. @dn On Hold Time (Minutes) @p hasA
+  last_on_hold_time                      DateTime? /// @desc Contains the date and time stamp of the last on hold time. @dn Last On Hold Time @p hasA
+  follow_email                           Boolean? /// @desc Information about whether to allow following email activity like opens, attachment views and link clicks for emails sent to the contact. @dn Follow Email Activity @p hasA
+  time_spent_by_me_on_email_and_meetings String? /// @desc Total time spent for emails (read and write) and meetings by me in relation to the contact record. @dn Time Spent by me @p hasA
+  business2                              String? /// @desc Type a second business phone number for this contact. @dn Business Phone 2 @p hasA
+  callback                               String? /// @desc Type a callback phone number for this contact. @dn Callback Number @p hasA
+  company                                String? /// @desc Type the company phone of the contact. @dn Company Phone @p hasA
+  home2                                  String? /// @desc Type a second home phone number for this contact. @dn Home Phone 2 @p hasA
+  created_by_external_party              String? /// @desc Shows the external party who created the record. @dn Created By (External Party) @p hasA
+  modified_by_external_party             String? /// @desc Shows the external party who modified the record. @dn Modified By (External Party) @p hasA
+  marketing_only                         Boolean? /// @desc Whether is only for marketing @dn Marketing Only @p hasA
+  default_price_level_id                 String? /// @desc Choose the default price list associated with the contact to make sure the correct product prices for this customer are applied in sales opportunities, quotes, and orders. @dn Price List 
+  preferred_equipment_id                 String? /// @desc Choose the contact's preferred service facility or equipment to make sure services are scheduled correctly for the customer. @dn Preferred Facility/Equipment 
+  preferred_service_id                   String? /// @desc Choose the contact's preferred service to make sure services are scheduled correctly for the customer. @dn Preferred Service 
+  created_by                             String? /// @desc Unique identifier of the user who created. @dn Created By  
+  modified_by                            String? /// @desc Unique identifier of the user who last modified. @dn Modified By  
+  created_on_behalf_by                   String? /// @desc Shows who created the record on behalf of another user. @dn Created On Behalf By  
+  modified_on_behalf_by                  String? /// @desc  Shows who modified the record on behalf of another user. @dn Modified On Behalf By 
+  originating_lead_id                    String? /// @desc Unique identifier of the originating lead for the contact. @dn Originating Lead
+
+  lead              Lead?              @relation("contact_lead", fields: [originating_lead_id], references: [lead_id])
+  facilityequipment FacilityEquipment? @relation("contact_preferred_facility_equipment", fields: [preferred_equipment_id], references: [equipment_id])
+  service           Service?           @relation("contact_preferred_service_id", fields: [preferred_service_id], references: [service_id])
+
+  users                              User[] @relation("contact")
+  created_by_user_contact            User?  @relation("created_by_user_contact", fields: [created_by], references: [system_user_id])
+  modified_by_user_contact           User?  @relation("modified_by_user_contact", fields: [modified_by], references: [system_user_id])
+  created_on_behalf_by_user_contact  User?  @relation("created_on_behalf_by_user_contact", fields: [created_on_behalf_by], references: [system_user_id])
+  modified_on_behalf_by_user_contact User?  @relation("modified_on_behalf_by_user_contact", fields: [modified_on_behalf_by], references: [system_user_id])
+}
+
+/// Prospect or potential sales opportunity. Leads are converted into accounts, contacts, or opportunities when they are qualified. Otherwise, they are deleted or archived.
+model Lead {
+  lead_id                                String    @id @default(uuid()) /// @desc Unique identifier of the lead. @dn Lead @p identifiedBy
+  full_name                              String? /// @desc Combines and shows the lead's first and last names so the full name can be displayed in views and reports. @dn Name @p hasA
+  process_id                             String? /// @desc Contains the id of the process associated with the entity. @dn Process Id @p hasA
+  stage_id                               String? /// @desc Contains the id of the stage where the entity is located. @dn Stage Id @p hasA
+  traversed_path                         String? /// @desc A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur. @dn Traversed Path @p hasA
+  parent_account_id                      String? /// @desc Choose an account to connect this lead to, so that the relationship is visible in reports and analytics. @dn Parent Account for lead 
+  parent_contact_id                      String? /// @desc Choose a contact to connect this lead to, so that the relationship is visible in reports and analytics. @dn Parent Contact for lead 
+  budget_amount                          String? /// @desc Information about the budget amount of the lead's company or organization. @dn Budget Amount @p hasA
+  transaction_currency_id                String? /// @desc Choose the local currency for the record to make sure budgets are reported in the correct currency. @dn Currency 
+  exchange_rate                          Decimal? /// @desc Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency. @dn Exchange Rate @p hasA
+  budget_amount_base                     String? /// @desc Value of the Budget Amount in base currency. @dn Budget Amount (Base) @p hasA
+  budget_status                          String? /// @desc Information about the budget status of the lead's company or organization. @dn Budget @p hasA
+  company_name                           String? /// @desc Type the name of the company associated with the lead. This becomes the account name when the lead is qualified and converted to a customer account. @dn Company Name @p hasA
+  confirm_interest                       Boolean? /// @desc Select whether the lead confirmed interest in your offerings. This helps in determining the lead quality. @dn Confirm Interest @p hasA
+  decision_maker                         Boolean? /// @desc Select whether your notes include information about who makes the purchase decisions at the lead's company. @dn Decision Maker? @p hasA
+  description                            String? /// @desc Type additional information to describe the lead, such as an excerpt from the company's website. @dn Description @p hasA
+  do_not_bulk_email                      Boolean? /// @desc Select whether the lead accepts bulk email sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the lead can be added to marketing lists, but will be excluded from the email. @dn Do not allow Bulk Emails @p hasA
+  do_not_fax                             Boolean? /// @desc Select whether the lead allows faxes. @dn Do not allow Faxes @p hasA
+  do_not_phone                           Boolean? /// @desc Select whether the lead allows phone calls. @dn Do not allow Phone Calls @p hasA
+  do_not_postal_mail                     Boolean? /// @desc Select whether the lead allows direct mail. @dn Do not allow Mails @p hasA
+  do_not_send_m_m                        Boolean? /// @desc Select whether the lead accepts marketing materials, such as brochures or catalogs. Leads that opt out can be excluded from marketing initiatives. @dn Marketing Material @p hasA
+  email_address1                         String? /// @desc Type the primary email address for the lead. @dn Email @p hasA
+  email_address2                         String? /// @desc Type the secondary email address for the lead. @dn Email Address 2 @p hasA
+  email_address3                         String? /// @desc Type a third email address for the lead. @dn Email Address 3 @p hasA
+  estimated_amount                       String? /// @desc Type the estimated revenue value that this lead will generate to assist in sales forecasting and planning. @dn Est. Value @p hasA
+  estimated_amount_base                  String? /// @desc Value of the Est. Value in base currency. @dn Est. Value (Base) @p hasA
+  estimated_close_date                   DateTime? /// @desc Enter the expected close date for the lead, so that the sales team can schedule timely follow-up meetings to move the prospect to the next sales stage. @dn Est. Close Date @p hasA
+  estimated_value                        String? /// @desc Type a numeric value of the lead's estimated value, such as a product quantity, if no revenue amount can be specified in the Est. Value field. This can be used for sales forecasting and planning. @dn Est. Value (deprecated) @p hasA
+  evaluate_fit                           Boolean? /// @desc Select whether the fit between the lead's requirements and your offerings was evaluated. @dn Evaluate Fit @p hasA
+  fax                                    String? /// @desc Type the fax number for the primary contact for the lead. @dn Fax @p hasA
+  first_name                             String? /// @desc Type the first name of the primary contact for the lead to make sure the prospect is addressed correctly in sales calls, email, and marketing campaigns. @dn First Name @p hasA
+  industry_code                          String? /// @desc Select the primary industry in which the lead's business is focused, for use in marketing segmentation and demographic analysis. @dn Industry @p hasA
+  initial_communication                  String? /// @desc Choose whether someone from the sales team contacted this lead earlier. @dn Initial Communication @p hasA
+  job_title                              String? /// @desc Type the job title of the primary contact for this lead to make sure the prospect is addressed correctly in sales calls, email, and marketing campaigns. @dn Job Title @p hasA
+  last_name                              String? /// @desc Type the last name of the primary contact for the lead to make sure the prospect is addressed correctly in sales calls, email, and marketing campaigns. @dn Last Name @p hasA
+  last_used_in_campaign                  DateTime? /// @desc Shows the date when the lead was last included in a marketing campaign or quick campaign. @dn Last Campaign Date @p hasA
+  lead_quality_code                      String? /// @desc Select a rating value to indicate the lead's potential to become a customer. @dn Rating @p hasA
+  lead_source_code                       String? /// @desc Select the primary marketing source that prompted the lead to contact you. @dn Lead Source @p hasA
+  master_id                              String? /// @desc Unique identifier of the master lead for merge. @dn Master ID 
+  merged                                 Boolean? /// @desc Tells whether the lead has been merged with another lead. @dn Merged @p hasA
+  middle_name                            String? /// @desc Type the middle name or initial of the primary contact for the lead to make sure the prospect is addressed correctly. @dn Middle Name @p hasA
+  mobile_phone                           String? /// @desc Type the mobile phone number for the primary contact for the lead. @dn Mobile Phone @p hasA
+  need                                   String? /// @desc Choose how high the level of need is for the lead's company. @dn Need @p hasA
+  number_of_employees                    Int? /// @desc Type the number of employees that work at the company associated with the lead, for use in marketing segmentation and demographic analysis. @dn No. of Employees @p hasA
+  pager                                  String? /// @desc Type the pager number for the primary contact for the lead. @dn Pager @p hasA
+  participates_in_workflow               Boolean? /// @desc Shows whether the lead participates in workflow rules. @dn Participates in Workflow @p hasA
+  preferred_contact_method_code          String? /// @desc Select the preferred method of contact. @dn Preferred Method of Contact @p hasA
+  priority_code                          String? /// @desc Select the priority so that preferred customers or critical issues are handled quickly. @dn Priority @p hasA
+  purchase_process                       String? /// @desc Choose whether an individual or a committee will be involved in the  purchase process for the lead. @dn Purchase Process @p hasA
+  qualification_comments                 String? /// @desc Type comments about the qualification or scoring of the lead. @dn Qualification Comments @p hasA
+  revenue                                String? /// @desc Type the annual revenue of the company associated with the lead to provide an understanding of the prospect's business. @dn Annual Revenue @p hasA
+  revenue_base                           String? /// @desc Value of the Annual Revenue in base currency. @dn Annual Revenue (Base) @p hasA
+  sales_stage                            String? /// @desc Select the sales stage of this lead to aid the sales team in their efforts to convert this lead to an opportunity. @dn Sales Stage @p hasA
+  sales_stage_code                       String? /// @desc Select the sales process stage for the lead to help determine the probability of the lead converting to an opportunity. @dn Sales Stage Code @p hasA
+  salutation                             String? /// @desc Type the salutation of the primary contact for this lead to make sure the prospect is addressed correctly in sales calls, email messages, and marketing campaigns. @dn Salutation @p hasA
+  schedule_followup_prospect             DateTime? /// @desc Enter the date and time of the prospecting follow-up meeting with the lead. @dn Schedule Follow Up (Prospect) @p hasA
+  schedule_follow_up_qualify             DateTime? /// @desc Enter the date and time of the qualifying follow-up meeting with the lead. @dn Schedule Follow Up (Qualify) @p hasA
+  sic                                    String? /// @desc Type the Standard Industrial Classification (SIC) code that indicates the lead's primary industry of business for use in marketing segmentation and demographic analysis. @dn SIC Code @p hasA
+  state_code                             String /// @desc Shows whether the lead is open, qualified, or disqualified. Qualified and disqualified leads are read-only and can't be edited unless they are reactivated. @dn Status @p representsStateWith
+  status_code                            String? /// @desc Select the lead's status. @dn Status Reason @p [object Object]
+  subject                                String? /// @desc Type a subject or descriptive name, such as the expected order, company name, or marketing source list, to identify the lead. @dn Topic @p hasA
+  telephone1                             String? /// @desc Type the work phone number for the primary contact for the lead. @dn Business Phone @p hasA
+  telephone2                             String? /// @desc Type the home phone number for the primary contact for the lead. @dn Home Phone @p hasA
+  telephone3                             String? /// @desc Type an alternate phone number for the primary contact for the lead. @dn Other Phone @p hasA
+  purchase_time_frame                    String? /// @desc Choose how long the lead will likely take to make the purchase, so the sales team will be aware. @dn Purchase Timeframe @p hasA
+  web_site_url                           String? /// @desc Type the website URL for the company associated with this lead. @dn Website @p hasA
+  sla_id                                 String? /// @desc Choose the service level agreement (SLA) that you want to apply to the Lead record. @dn SLA 
+  sla_invoked_id                         String? /// @desc Last SLA that was applied to this case. This field is for internal use only. @dn Last SLA applied 
+  on_hold_time                           Int? /// @desc Shows how long, in minutes, that the record was on hold. @dn On Hold Time (Minutes) @p hasA
+  last_on_hold_time                      DateTime? /// @desc Contains the date and time stamp of the last on hold time. @dn Last On Hold Time @p hasA
+  follow_email                           Boolean? /// @desc Information about whether to allow following email activity like opens, attachment views and link clicks for emails sent to the lead. @dn Follow Email Activity @p hasA
+  time_spent_by_me_on_email_and_meetings String? /// @desc Total time spent for emails (read and write) and meetings by me in relation to the lead record. @dn Time Spent by me @p hasA
+  entity_image_id                        String? ///   @p hasA
+  account_id                             String? /// @desc Unique identifier of the account with which the lead is associated. @dn Account @p hasA
+  contact_id                             String? /// @desc Unique identifier of the contact with which the lead is associated. @dn Contact @p hasA
+  yomi_company_name                      String? /// @desc Type the phonetic spelling of the lead's company name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect. @dn Yomi Company Name @p hasA
+  yomi_first_name                        String? /// @desc Type the phonetic spelling of the lead's first name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect. @dn Yomi First Name @p hasA
+  yomi_full_name                         String? /// @desc Combines and shows the lead's Yomi first and last names so the full phonetic name can be displayed in views and reports. @dn Yomi Full Name @p hasA
+  yomi_last_name                         String? /// @desc Type the phonetic spelling of the lead's last name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect. @dn Yomi Last Name @p hasA
+  yomi_middle_name                       String? /// @desc Type the phonetic spelling of the lead's middle name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect. @dn Yomi Middle Name @p hasA
+  campaign_id                            String? /// @desc Choose the campaign that the lead was generated from to track the effectiveness of marketing campaigns and identify  communications received by the lead. @dn Source Campaign 
+  related_object_id                      String? /// @desc Related Campaign Response. @dn Related Campaign Response 
+  originating_case_id                    String? /// @desc This attribute is used for Sample Service Business Processes. @dn Originating Case 
+  qualifying_opportunity_id              String? /// @desc Choose the opportunity that the lead was qualified on and then converted to. @dn Qualifying Opportunity  
+  owner_id                               String? // @desc owner's id @dn Owner
+  owner_id_type                          String? // @desc The type of owner, either User or Team.  @dn Owner Type
+  customer_id                            String? // @desc The customer account or contact to provide a quick link to additional customer details, such as account information, activities, and opportunities. @dn Customer
+  customer_id_type                       String? // @desc The type of customer, either Account or Contact. @dn Customer Type
+
+  contact Contact[] @relation("contact_lead")
+}
+
+/// Resource that can be scheduled.
+model FacilityEquipment {
+  equipment_id                  String    @id @default(uuid()) /// @desc Unique identifier of the facility/equipment. @dn Facility/Equipment @p identifiedBy
+  created_on                    DateTime? /// @desc Date and time when the record was created. @dn Created On @p createdOn
+  created_by                    String? /// @desc Unique identifier of the user who created the facility/equipment entry. @dn Created By 
+  modified_on                   DateTime? /// @desc Date and time when the record was modified. @dn Modified On @p modifiedOn
+  modified_by                   String? /// @desc Unique identifier of the user who last modified the facility/equipment. @dn Modified By 
+  created_on_behalf_by          String? /// @desc Unique identifier of the delegate user who created the equipment. @dn Created By (Delegate) 
+  modified_on_behalf_by         String? /// @desc Unique identifier of the delegate user who last modified the equipment. @dn Modified By (Delegate) 
+  business_unit_id              String /// @desc Business Unit Id @dn Business Unit Id 
+  version_number                Int? /// @desc Version Number @dn Version Number @p hasA
+  import_sequence_number        Int? /// @desc Sequence number of the import that created this record. @dn Import Sequence Number @p hasA
+  overridden_created_on         DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  time_zone_rule_version_number Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  utc_conversion_time_zone_code Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  name                          String /// @desc Name of the facility/equipment. @dn Name @p hasA
+  calendar_id                   String /// @desc Fiscal calendar associated with the facility/equipment. @dn Calendar @p hasA
+  description                   String? /// @desc Description of the facility/equipment. @dn Description @p hasA
+  display_in_service_views      Boolean? /// @desc For internal use only. @dn Display in Service Views @p hasA
+  email_address                 String? /// @desc Email address of person to contact about the use of the facility/equipment. @dn Primary Email @p hasA
+  is_disabled                   Boolean? /// @desc Whether the facility/equipment is disabled or operational. @dn Is Disabled @p hasA
+  organization_id               String /// @desc Unique identifier of the parent business unit. @dn Organization 
+  site_id                       String? /// @desc Site where the facility/equipment is located. @dn Site 
+  skills                        String? /// @desc Skills needed to operate the facility/equipment. @dn Skills @p hasA
+  time_zone_code                String /// @desc Local time zone where the facility/equipment is located. @dn Time Zone @p hasA
+  exchange_rate                 Decimal? /// @desc Exchange rate for the currency associated with the equipment with respect to the base currency. @dn Exchange Rate @p hasA
+  transaction_currency_id       String? /// @desc Unique identifier of the currency associated with the equipment. @dn Currency 
+
+  contact Contact[] @relation("contact_preferred_facility_equipment")
+}
+
+/// Activity that represents work done to satisfy a customer's need.
+model Service {
+  service_id                    String    @id @default(uuid()) /// @desc Unique identifier of the associated service. @dn Service @p identifiedBy
+  created_on                    DateTime? /// @desc Date and time when the service was created. @dn Created On @p createdOn
+  created_by                    String? /// @desc Unique identifier of the user who created the service. @dn Created By 
+  modified_on                   DateTime? /// @desc Date and time when the service was last modified. @dn Modified On @p modifiedOn
+  modified_by                   String? /// @desc Unique identifier of the user who last modified the service. @dn Modified By 
+  created_on_behalf_by          String? /// @desc Unique identifier of the delegate user who created the service. @dn Created By (Delegate) 
+  modified_on_behalf_by         String? /// @desc Unique identifier of the delegate user who last modified the service. @dn Modified By (Delegate) 
+  organization_id               String /// @desc Unique identifier for the organization @dn Organization Id 
+  version_number                Int? /// @desc Version Number @dn Version Number @p hasA
+  import_sequence_number        Int? /// @desc Sequence number of the import that created this record. @dn Import Sequence Number @p hasA
+  overridden_created_on         DateTime? /// @desc Date and time that the record was migrated. @dn Record Created On @p createdOn
+  time_zone_rule_version_number Int? /// @desc For internal use only. @dn Time Zone Rule Version Number @p hasA
+  utc_conversion_time_zone_code Int? /// @desc Time zone code that was in use when the record was created. @dn UTC Conversion Time Zone Code @p hasA
+  name                          String /// @desc Name of the service. @dn Name @p hasA
+  anchor_offset                 Int? /// @desc Used in conjunction with granularity to describes when services can be performed in relation to midnight on a given day. @dn Anchor Offset @p hasA
+  calendar_id                   String? /// @desc Unique identifier of the calendar. @dn Calendar @p hasA
+  description                   String? /// @desc Description of activity that represents work done to satisfy a customer's need. @dn Description @p hasA
+  duration                      String /// @desc Duration of the service. @dn Duration @p hasA
+  granularity                   String /// @desc Describes how often the service is performed. @dn Granularity @p hasA
+  initial_status_code           String /// @desc Initial status reason for the service activity. @dn Initial Status Reason @p [object Object]
+  is_schedulable                Boolean /// @desc Information about whether the service can be scheduled. @dn Status @p hasA
+  is_visible                    Boolean? /// @desc Information about whether the service is visible to users. @dn Is Visible @p hasA
+  resource_spec_id              String /// @desc Unique identifier of the resource specification with which the service is associated. @dn Required Resources 
+  show_resources                Boolean? /// @desc For internal use only. @dn Show Resources @p hasA
+  strategy_id                   String /// @desc Value that is taken from PluginTypeId in the Plugin Type record for the scheduling strategy. This is the ID of the scheduling strategy plug-in associated with the service. @dn Strategy @p hasA 
+
+  contact Contact[] @relation("contact_preferred_service_id")
 }

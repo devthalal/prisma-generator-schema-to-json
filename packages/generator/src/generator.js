@@ -2,10 +2,12 @@ import { generatorHandler } from '@prisma/generator-helper'
 import { logger } from '@prisma/sdk'
 import path from 'path'
 import { GENERATOR_NAME } from './constants'
-import { genEnum } from './helpers/genEnum'
+import { extractFields } from './helpers'
+import { saveSchema } from './utils/saveSchema'
 import { writeFileSafely } from './utils/writeFileSafely'
 
 const { version } = require('../package.json')
+
 
 generatorHandler({
   onManifest() {
@@ -17,15 +19,21 @@ generatorHandler({
     }
   },
   onGenerate: async (options) => {
-    options.dmmf.datamodel.enums.forEach(async (enumInfo) => {
-      const tsEnum = genEnum(enumInfo)
-
+    options.dmmf.datamodel.models.forEach(async (model) => {
       const writeLocation = path.join(
         options.generator.output?.value,
-        `${enumInfo.name}.ts`,
+        `${model.name}.json`,
       )
 
-      await writeFileSafely(writeLocation, tsEnum)
+      model.fields = await extractFields(
+        JSON.parse(JSON.stringify(model.fields)),
+      )
+
+      model.description = model.documentation
+
+      await saveSchema(model)
+
+      // await writeFileSafely(writeLocation, modelData)
     })
   },
 })
