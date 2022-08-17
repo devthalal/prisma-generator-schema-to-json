@@ -20,3 +20,17 @@ export const extractFields = (fields) => {
     return { ...field, ...customFieldOptions }
   })
 }
+
+export const extractModelDocumentation = (doc) => {
+  return doc.split('@').reduce((acc, cur) => {
+    const val = cur.split(' ').slice(1).join(' ')
+    ;[
+      { type: 'description', typeSN: 'desc' },
+      { type: 'type', typeSN: 'type' },
+      { type: 'version', typeSN: 'v' },
+    ].forEach(({ type, typeSN }) => {
+      if (cur.startsWith(typeSN)) acc[type] = val.trim()
+    })
+    return acc
+  }, {})
+}

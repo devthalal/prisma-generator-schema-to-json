@@ -13,7 +13,7 @@ enum PosterSource {
   GITHUB
 }
 
-/// Person with access to the system and who owns objects in the database.
+/// @desc Person with access to the system and who owns objects in the database. @type 0 @v 0.0.1
 model User {
   system_user_id                 String    @id @default(uuid()) /// @desc Unique identifier for the user. @dn User @p identifiedBy
   organization_id                String /// @desc Unique identifier of the organization associated with the user. @dn Organization  
@@ -156,7 +156,7 @@ model User {
   modified_on_behalf_by_user_contact Contact[] @relation("modified_on_behalf_by_user_contact")
 }
 
-// Currency in which a financial transaction is carried out.
+/// @desc Currency in which a financial transaction is carried out. @type 0 @v 0.0.1
 model Currency {
   status_code             String? /// @desc Reason for the status of the transaction currency. @dn Status Reason
   modified_on             DateTime? /// @desc Date and time when the transaction currency was last modified. @dn Modified On @p modifiedOn
@@ -191,7 +191,7 @@ model Currency {
   base_currency_organizations Organization[] @relation("base_currency_organization")
 }
 
-/// Territory represents sales regions.
+/// @desc Territory represents sales regions. @type 0 @v 0.0.1
 model Territory {
   territory_id                  String    @id @default(uuid()) /// @desc Unique identifier of the territory. @dn Territory @p identifiedBy
   created_on                    DateTime? /// @desc Date and time when the record was created. @dn Created On @p createdOn
@@ -222,7 +222,7 @@ model Territory {
   organization Organization? @relation("organization_territory", fields: [organization_id], references: [organization_id])
 }
 
-/// Queue - A list of records that require action, such as accounts, activities, and cases.
+/// @desc Queue - A list of records that require action, such as accounts, activities, and cases. @type 0 @v 0.0.1
 model Queue {
   queue_id                                String    @id @default(uuid()) /// @desc Unique identifier of the queue. @dn Queue @p identifiedBy
   business_unit_id                        String? /// @desc Unique identifier of the business unit with which the queue is associated. @dn Business Unit 
@@ -274,7 +274,7 @@ model Queue {
   modified_on_behalf_by_user_queue User?  @relation("modified_on_behalf_by_user_queue", fields: [modified_on_behalf_by], references: [system_user_id])
 }
 
-// Position of a user in the hierarchy
+/// @desc Position of a user in the hierarchy. @type 0 @v 0.0.1
 model Position {
   position_id                   String    @id @default(uuid()) /// @desc Unique identifier for position entity instances @dn Position @p identifiedBy
   created_on                    DateTime? /// @desc Date and time when the record was created. @dn Created On @p createdOn
@@ -310,7 +310,7 @@ model Position {
   children_positions Position[] @relation("parent_postion")
 }
 
-/// Location or branch office where an organization does business. An organization can have multiple sites.
+/// @desc Location or branch office where an organization does business. An organization can have multiple sites. @type 0 @v 0.0.1
 model Site {
   site_id                       String    @id @default(uuid()) /// @desc Unique identifier of the site. @dn Site @p identifiedBy
   created_on                    DateTime? /// @desc Date and time when the site was created. @dn Created On @p createdOn
@@ -338,7 +338,7 @@ model Site {
   organization Organization? @relation("organization_site", fields: [organization_id], references: [organization_id])
 }
 
-/// Address and shipping information. Used to store additional addresses for an account or contact.
+/// @desc Address and shipping information. Used to store additional addresses for an account or contact. @type 0 @v 0.0.1
 model Address {
   address_id                    String    @id @default(uuid()) /// @desc Unique identifier of the customer address. @dn Address @p identifiedBy
   address_number                Int? /// @desc Shows the number of the address, to indicate whether the address is the primary, secondary, or other address for the customer. @dn Address Number @p hasA
@@ -394,7 +394,7 @@ model Address {
   modified_on_behalf_by_user_address User?  @relation("modified_on_behalf_by_user_address", fields: [modified_on_behalf_by], references: [system_user_id])
 }
 
-/// Top level of the business hierarchy. The organization can be a specific business, holding company, or corporation.
+/// @desc Top level of the business hierarchy. The organization can be a specific business, holding company, or corporation. @type 0 @v 0.0.1
 model Organization {
   organization_id                                          String    @id @default(uuid()) /// @desc Unique identifier of the organization. @dn Organization @p identifiedBy
   name                                                     String /// @desc Name of the organization. The name is set when SDM is installed and should not be changed. @dn Organization Name @p hasA
@@ -702,7 +702,7 @@ model Organization {
   business_unit BusinessUnit[] @relation("organization_business_unit")
 }
 
-/// Business, division, or department.
+/// @desc Business, division, or department. @type 0 @v 0.0.1
 model BusinessUnit {
   business_unit_id        String    @id @default(uuid()) /// @desc Unique identifier of the business unit. @dn Business Unit @p identifiedBy
   organization_id         String /// @desc Unique identifier of the organization associated with the business unit. @dn Organization 
@@ -750,7 +750,7 @@ model BusinessUnit {
   currency Currency? @relation("business_unit_currency", fields: [transaction_currency_id], references: [transaction_currency_id])
 }
 
-/// Person with whom a business unit has a relationship, such as customer, supplier, and colleague.
+/// @desc Person with whom a business unit has a relationship, such as customer, supplier, and colleague. @type 0 @v 0.0.1
 model Contact {
   contact_id                             String    @id @default(uuid()) /// @desc Unique identifier of the contact. @dn Contact @p identifiedBy
   customer_size_code                     String? /// @desc Select the size of the contact's company for segmentation and reporting purposes. @dn Customer Size @p hasA
@@ -872,7 +872,7 @@ model Contact {
   modified_on_behalf_by_user_contact User?  @relation("modified_on_behalf_by_user_contact", fields: [modified_on_behalf_by], references: [system_user_id])
 }
 
-/// Prospect or potential sales opportunity. Leads are converted into accounts, contacts, or opportunities when they are qualified. Otherwise, they are deleted or archived.
+/// @desc Prospect or potential sales opportunity. Leads are converted into accounts, contacts, or opportunities when they are qualified. Otherwise, they are deleted or archived. @type 1 @v 0.0.1
 model Lead {
   lead_id                                String    @id @default(uuid()) /// @desc Unique identifier of the lead. @dn Lead @p identifiedBy
   full_name                              String? /// @desc Combines and shows the lead's first and last names so the full name can be displayed in views and reports. @dn Name @p hasA
@@ -966,7 +966,7 @@ model Lead {
   contact Contact[] @relation("contact_lead")
 }
 
-/// Resource that can be scheduled.
+/// @desc Resource that can be scheduled. @type 0 @v 0.0.1
 model FacilityEquipment {
   equipment_id                  String    @id @default(uuid()) /// @desc Unique identifier of the facility/equipment. @dn Facility/Equipment @p identifiedBy
   created_on                    DateTime? /// @desc Date and time when the record was created. @dn Created On @p createdOn
@@ -997,7 +997,7 @@ model FacilityEquipment {
   contact Contact[] @relation("contact_preferred_facility_equipment")
 }
 
-/// Activity that represents work done to satisfy a customer's need.
+/// @desc Activity that represents work done to satisfy a customer's need. @type 0 @v 0.0.1
 model Service {
   service_id                    String    @id @default(uuid()) /// @desc Unique identifier of the associated service. @dn Service @p identifiedBy
   created_on                    DateTime? /// @desc Date and time when the service was created. @dn Created On @p createdOn

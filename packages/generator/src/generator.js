@@ -8,7 +8,6 @@ import { writeFileSafely } from './utils/writeFileSafely'
 
 const { version } = require('../package.json')
 
-
 generatorHandler({
   onManifest() {
     logger.info(`${GENERATOR_NAME}:Registered`)
@@ -28,8 +27,6 @@ generatorHandler({
       model.fields = await extractFields(
         JSON.parse(JSON.stringify(model.fields)),
       )
-
-      model.description = model.documentation
 
       await saveSchema(model)
 
