@@ -1,0 +1,19 @@
+{
+  "name": "usage",
+  "private": true,
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "license": "MIT",
+  "scripts": {
+    "gen": "npx prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "4.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "16.11.7",
+    "prisma": "4.13.0",
+    "prisma-generator-schema-to-json": "workspace:*",
+    "typescript": "4.5.2"
+  }
+}
