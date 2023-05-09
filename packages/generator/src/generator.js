@@ -1,7 +1,7 @@
 import path from 'path'
 
 import { generatorHandler } from '@prisma/generator-helper'
-import { logger } from '@prisma/sdk'
+import { logger } from '@prisma/internals'
 
 import { GENERATOR_NAME } from './constants'
 import { extractFields } from './helpers'
