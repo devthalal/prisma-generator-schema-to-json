@@ -1,0 +1,35 @@
+generator custom_generator {
+  provider = "npx prisma-generator-schema-to-json"
+  output   = "../schema_json"
+  sdm_docs = "../sdm_docs"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_URL")
+}
+
+// Decorators
+
+// @desc Description
+// @dn DisplayName
+// @p purpose
+// @type ModelType
+// @v ModelVersion
+
+/// @desc Person with access to the system and who owns objects in the database. @type 0 @v 0.0.1
+model TestUser {
+  user_id                String  @id @default(uuid()) /// @desc Unique identifier for the user. @dn User @p identifiedBy
+  first_name             String? /// @desc First name of the user. @dn First Name @p hasA
+  last_name              String? /// @desc Last name of the user. @dn Last Name @p hasA
+  personal_email_address String? /// @desc Personal email address of the user. @dn Email 2 @p hasA
+  created_by             String? /// @desc Unique identifier of the user who created the user. @dn Created By  @p hasA
+  modified_by            String? /// @desc Unique identifier of the user who last modified the user. @dn Modified By  @p hasA
+  where_are_you            String? /// @desc Unique identifier of the user who last modified the user. @dn Modified By  @p hasA
+
+  created_by_user_rel  TestUser?  @relation("created_by_user_rel", fields: [created_by], references: [user_id])
+  created_by_user      TestUser[] @relation("created_by_user_rel")
+  
+  modified_by_user_rel TestUser?  @relation("modified_by_user_rel", fields: [modified_by], references: [user_id])
+  modified_by_user     TestUser[] @relation("modified_by_user_rel")
+}
