@@ -1,0 +1,216 @@
+{
+  "name": "TestUser",
+  "dbName": null,
+  "fields": [
+    {
+      "name": "user_id",
+      "kind": "scalar",
+      "isList": false,
+      "isRequired": true,
+      "isUnique": false,
+      "isId": true,
+      "isReadOnly": false,
+      "hasDefaultValue": true,
+      "type": "String",
+      "default": {
+        "name": "uuid",
+        "args": []
+      },
+      "isGenerated": false,
+      "isUpdatedAt": false,
+      "documentation": "@desc Unique identifier for the user. @dn User @p identifiedBy",
+      "description": "Unique identifier for the user.",
+      "displayName": "User",
+      "purpose": "identifiedBy"
+    },
+    {
+      "name": "first_name",
+      "kind": "scalar",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "String",
+      "isGenerated": false,
+      "isUpdatedAt": false,
+      "documentation": "@desc First name of the user. @dn First Name @p hasA",
+      "description": "First name of the user.",
+      "displayName": "First Name",
+      "purpose": "hasA"
+    },
+    {
+      "name": "last_name",
+      "kind": "scalar",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "String",
+      "isGenerated": false,
+      "isUpdatedAt": false,
+      "documentation": "@desc Last name of the user. @dn Last Name @p hasA",
+      "description": "Last name of the user.",
+      "displayName": "Last Name",
+      "purpose": "hasA"
+    },
+    {
+      "name": "personal_email_address",
+      "kind": "scalar",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "String",
+      "isGenerated": false,
+      "isUpdatedAt": false,
+      "documentation": "@desc Personal email address of the user. @dn Email 2 @p hasA",
+      "description": "Personal email address of the user.",
+      "displayName": "Email 2",
+      "purpose": "hasA"
+    },
+    {
+      "name": "created_by",
+      "kind": "scalar",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": true,
+      "hasDefaultValue": false,
+      "type": "String",
+      "isGenerated": false,
+      "isUpdatedAt": false,
+      "documentation": "@desc Unique identifier of the user who created the user. @dn Created By  @p hasA",
+      "description": "Unique identifier of the user who created the user.",
+      "displayName": "Created By",
+      "purpose": "hasA"
+    },
+    {
+      "name": "modified_by",
+      "kind": "scalar",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": true,
+      "hasDefaultValue": false,
+      "type": "String",
+      "isGenerated": false,
+      "isUpdatedAt": false,
+      "documentation": "@desc Unique identifier of the user who last modified the user. @dn Modified By  @p hasA",
+      "description": "Unique identifier of the user who last modified the user.",
+      "displayName": "Modified By",
+      "purpose": "hasA"
+    },
+    {
+      "name": "where_are_you",
+      "kind": "scalar",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "String",
+      "isGenerated": false,
+      "isUpdatedAt": false,
+      "documentation": "@desc Unique identifier of the user who last modified the user. @dn Modified By  @p hasA",
+      "description": "Unique identifier of the user who last modified the user.",
+      "displayName": "Modified By",
+      "purpose": "hasA"
+    }
+  ],
+  "primaryKey": null,
+  "uniqueFields": [],
+  "uniqueIndexes": [],
+  "isGenerated": false,
+  "documentation": "@desc Person with access to the system and who owns objects in the database. @type 0 @v 0.0.1",
+  "relations": [
+    {
+      "name": "created_by_user_rel",
+      "kind": "object",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "TestUser",
+      "relationName": "created_by_user_rel",
+      "relationFromFields": [
+        "created_by"
+      ],
+      "relationToFields": [
+        "user_id"
+      ],
+      "isGenerated": false,
+      "isUpdatedAt": false
+    },
+    {
+      "name": "created_by_user",
+      "kind": "object",
+      "isList": true,
+      "isRequired": true,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "TestUser",
+      "relationName": "created_by_user_rel",
+      "relationFromFields": [
+        "created_by"
+      ],
+      "relationToFields": [
+        "user_id"
+      ],
+      "isGenerated": false,
+      "isUpdatedAt": false
+    },
+    {
+      "name": "modified_by_user_rel",
+      "kind": "object",
+      "isList": false,
+      "isRequired": false,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "TestUser",
+      "relationName": "modified_by_user_rel",
+      "relationFromFields": [
+        "modified_by"
+      ],
+      "relationToFields": [
+        "user_id"
+      ],
+      "isGenerated": false,
+      "isUpdatedAt": false
+    },
+    {
+      "name": "modified_by_user",
+      "kind": "object",
+      "isList": true,
+      "isRequired": true,
+      "isUnique": false,
+      "isId": false,
+      "isReadOnly": false,
+      "hasDefaultValue": false,
+      "type": "TestUser",
+      "relationName": "modified_by_user_rel",
+      "relationFromFields": [
+        "modified_by"
+      ],
+      "relationToFields": [
+        "user_id"
+      ],
+      "isGenerated": false,
+      "isUpdatedAt": false
+    }
+  ]
+}
